@@ -143,6 +143,7 @@ function App() {
   const [sharks, setSharks] = useState([]);
   const [hitReactionAt, setHitReactionAt] = useState(null);
   const [celebrationUntil, setCelebrationUntil] = useState(0);
+  const [celebrationPoseIndex, setCelebrationPoseIndex] = useState(0);
   const [shakeUntil, setShakeUntil] = useState(0);
   const [playerLane, setPlayerLane] = useState("center");
   const [playerX, setPlayerX] = useState(PLAYER_X.center);
@@ -222,7 +223,12 @@ function App() {
       nanaCheese: getRole("item_nana_cheese", "/assets/sprites/items/item_nana_cheese.png"),
       icedTea: getRole("item_unsweetened_iced_tea", "/assets/sprites/items/item_unsweetened_iced_tea.png"),
       titleScreen: getRole("title_screen", ""),
-      joyfulPose: getRole("dexter_joyful", "/assets/sprites/poses/dexter_joyful.png"),
+      celebrationPoses: [
+        getRole("dexter_joyful", "/assets/sprites/poses/dexter_joyful.png"),
+        getRole("dexter_excited", "/assets/sprites/poses/dexter_excited.png"),
+        getRole("dexter_proud", "/assets/sprites/poses/dexter_proud.png"),
+        getRole("dexter_focused", "/assets/sprites/poses/dexter_focused.png"),
+      ],
     };
   }, [roleMap]);
 
@@ -480,6 +486,7 @@ function App() {
           setPartyMeter((v) => clamp(v + 8, 0, 100));
           setFeedback(choice(SUCCESS_LINES));
           setLastAction({ lane: collectedItem.lane, time: clockMs, result: "collect" });
+          setCelebrationPoseIndex(Math.floor(Math.random() * 4));
           setCelebrationUntil(clockMs + 500);
           triggerMeterBump();
           spawnHitParticles(LANE_X[collectedItem.lane], true);
@@ -904,6 +911,8 @@ function App() {
     setCostumeVisible({ hat: true, sweater: true, bowtie: true });
     setFlyingCostume(null);
     setHitParticles([]);
+    setCelebrationUntil(0);
+    setCelebrationPoseIndex(0);
     setLastAction({ lane: null, time: 0, result: "none" });
     beatCountRef.current = 0;
     nextBeatRef.current = 0;
@@ -949,6 +958,8 @@ function App() {
     setCostumeVisible({ hat: true, sweater: true, bowtie: true });
     setFlyingCostume(null);
     setHitReactionAt(null);
+    setCelebrationUntil(0);
+    setCelebrationPoseIndex(0);
     setShakeUntil(0);
     setPerfectPops([]);
     setSparkles([]);
@@ -1134,7 +1145,7 @@ function App() {
           }}
         >
           {showCelebration ? (
-            <img className="dexter-frame dexter-celebrate" src={sprite.joyfulPose} alt="Dexter celebrates" />
+            <img className="dexter-frame dexter-celebrate" src={sprite.celebrationPoses[celebrationPoseIndex] || sprite.celebrationPoses[0]} alt="Dexter celebrates" />
           ) : showHit ? (
             <img className="dexter-frame" src={sprite.hitFrames[hitIndex]} alt="Dexter reacts" />
           ) : (
