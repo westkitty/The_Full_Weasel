@@ -24,11 +24,13 @@ const HAZARD_LINES = [
 ];
 
 const BEAT_MS = 650;
-const FALL_MS = 2500;
+const FALL_MS_NORMAL = 2500;
+const FALL_MS_PRACTICE = 3500;
 const HIT_WINDOW_MS = 430;
 const PERFECT_WINDOW_MS = 140;
 const HIT_REACTION_MS = 260;
 const POPOFF_TARGET_TAPS = 16;
+const MAX_DELTA_MS = 100; // Clamp delta to prevent huge jumps after tab switch
 
 const FALLBACK_MANIFEST = {
   sprites: [
@@ -74,6 +76,9 @@ function App() {
   const beatCountRef = useRef(0);
   const deferredPromptRef = useRef(null);
   const manifestRef = useRef(FALLBACK_MANIFEST);
+  const itemsRef = useRef([]);
+  const clockRef = useRef(0);
+  const lastMatchRef = useRef(null);
   const musicRef = useRef({
     players: null,
     activePlayer: "a",
@@ -112,6 +117,20 @@ function App() {
   });
   const [installAvailable, setInstallAvailable] = useState(false);
   const [installMessage, setInstallMessage] = useState("");
+  const [showDebug, setShowDebug] = useState(false);
+  const [lastAction, setLastAction] = useState({ lane: null, time: 0, result: "none" });
+  const [practiceMode, setPracticeMode] = useState(false);
+  const [combo, setCombo] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [beatPulse, setBeatPulse] = useState(false);
+  const [hitParticles, setHitParticles] = useState([]);
+  const [meterBump, setMeterBump] = useState(false);
+  const [phaseTransition, setPhaseTransition] = useState(false);
+
+  // Computed fall time based on practice mode
+  const FALL_MS = practiceMode ? FALL_MS_PRACTICE : FALL_MS_NORMAL;
 
   const isShaking = clockMs < shakeUntil;
 
@@ -166,6 +185,14 @@ function App() {
   }, [manifest]);
 
   useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
+  useEffect(() => {
+    clockRef.current = clockMs;
+  }, [clockMs]);
+
+  useEffect(() => {
     const preventGesture = (event) => event.preventDefault();
     document.addEventListener("gesturestart", preventGesture, { passive: false });
     document.addEventListener("dblclick", preventGesture, { passive: false });
@@ -200,14 +227,42 @@ function App() {
   useEffect(() => {
     const loadManifest = async () => {
       try {
+        setLoadingProgress(10);
         const response = await fetch("/assets/manifest.json", { cache: "no-store" });
         if (!response.ok) {
           throw new Error("manifest fetch failed");
         }
+        setLoadingProgress(30);
         const data = await response.json();
         setManifest(data);
+        setLoadingProgress(50);
+        
+        // Preload critical sprites
+        const criticalImages = [
+          ...(data.sprites || []).slice(0, 6).map(s => s.url),
+        ].filter(Boolean);
+        
+        let loaded = 0;
+        await Promise.all(
+          criticalImages.map(
+            (url) =>
+              new Promise((resolve) => {
+                const img = new Image();
+                img.onload = img.onerror = () => {
+                  loaded++;
+                  setLoadingProgress(50 + Math.round((loaded / criticalImages.length) * 40));
+                  resolve();
+                };
+                img.src = url;
+              })
+          )
+        );
+        
+        setLoadingProgress(100);
+        setTimeout(() => setAssetsLoaded(true), 300);
       } catch {
         // Fallback manifest keeps app functional.
+        setAssetsLoaded(true);
       }
     };
     loadManifest();
@@ -266,15 +321,38 @@ function App() {
     setPlayerX(PLAYER_X[playerLane] ?? PLAYER_X.center);
   }, [playerLane]);
 
+  // Clamped delta time game loop to prevent huge jumps after tab switch
+  const lastTickRef = useRef(performance.now());
   useEffect(() => {
     if (phase === PHASE_LAUNCH) {
       return;
     }
-    const timer = window.setInterval(() => {
-      setClockMs((current) => current + 33);
-    }, 33);
+    const tick = () => {
+      const now = performance.now();
+      const delta = Math.min(now - lastTickRef.current, MAX_DELTA_MS);
+      lastTickRef.current = now;
+      setClockMs((current) => current + delta);
+    };
+    const timer = window.setInterval(tick, 33);
     return () => window.clearInterval(timer);
   }, [phase]);
+
+  // Beat pulse effect
+  useEffect(() => {
+    if (phase !== PHASE_RHYTHM) return;
+    const beatNumber = Math.floor(clockMs / BEAT_MS);
+    const beatProgress = (clockMs % BEAT_MS) / BEAT_MS;
+    if (beatProgress < 0.1) {
+      setBeatPulse(true);
+    } else if (beatProgress > 0.3) {
+      setBeatPulse(false);
+    }
+  }, [clockMs, phase]);
+
+  // Clean up hit particles
+  useEffect(() => {
+    setHitParticles((current) => current.filter((p) => clockMs - p.spawnedAt < 500));
+  }, [clockMs]);
 
   useEffect(() => {
     if (phase !== PHASE_RHYTHM) {
@@ -677,19 +755,28 @@ function App() {
   };
 
   const startGame = () => {
-    setClockMs(0);
-    setPartyMeter(0);
-    setItems([]);
-    setPopoffTaps(0);
-    setConfetti([]);
-    setShowSlam(false);
-    setPlayerLane("center");
-    setPlayerX(PLAYER_X.center);
-    beatCountRef.current = 0;
-    nextBeatRef.current = 0;
-    setFeedback("Tap left and right on beat!");
-    setPhase(PHASE_RHYTHM);
-    void startMusicIfNeeded();
+    // Phase transition animation
+    setPhaseTransition(true);
+    setTimeout(() => {
+      setClockMs(0);
+      setPartyMeter(0);
+      setItems([]);
+      setPopoffTaps(0);
+      setConfetti([]);
+      setShowSlam(false);
+      setPlayerLane("center");
+      setPlayerX(PLAYER_X.center);
+      setCombo(0);
+      setMaxCombo(0);
+      setHitParticles([]);
+      beatCountRef.current = 0;
+      nextBeatRef.current = 0;
+      lastTickRef.current = performance.now();
+      setFeedback(practiceMode ? "Practice Mode - Slower speed!" : "Tap left and right on beat!");
+      setPhase(PHASE_RHYTHM);
+      setPhaseTransition(false);
+      void startMusicIfNeeded();
+    }, 300);
   };
 
   const runPopoffTap = () => {
@@ -705,71 +792,134 @@ function App() {
     });
   };
 
+  // Haptic feedback helper
+  const vibrate = (pattern) => {
+    if (navigator.vibrate) {
+      navigator.vibrate(pattern);
+    }
+  };
+
+  // Spawn hit particle burst
+  const spawnHitParticles = (x, success) => {
+    const particles = Array.from({ length: success ? 8 : 4 }).map(() => ({
+      id: idRef.current(),
+      spawnedAt: clockRef.current,
+      x: x + (Math.random() - 0.5) * 20,
+      y: 78 + (Math.random() - 0.5) * 10,
+      vx: (Math.random() - 0.5) * 60,
+      vy: -Math.random() * 40 - 20,
+      hue: success ? 45 + Math.random() * 30 : 0,
+      success,
+    }));
+    setHitParticles((current) => [...current, ...particles]);
+  };
+
+  // Bump meter animation
+  const triggerMeterBump = () => {
+    setMeterBump(true);
+    setTimeout(() => setMeterBump(false), 200);
+  };
+
   const performRhythmAction = (lane, source = "tap") => {
+    // Read items synchronously from ref to avoid async setState closure issues
+    const currentItems = itemsRef.current;
+    const currentClock = clockRef.current;
+    let bestIndex = -1;
+    let bestDistance = Number.POSITIVE_INFINITY;
     let selected = null;
 
-    setItems((current) => {
-      const next = [...current];
-      let bestIndex = -1;
-      let bestDistance = Number.POSITIVE_INFINITY;
-
-      for (let i = 0; i < next.length; i += 1) {
-        const item = next[i];
-        if (item.resolved) {
-          continue;
-        }
-        const hitTime = item.spawnMs + FALL_MS;
-        const distance = Math.abs(hitTime - clockMs);
-        if (distance > HIT_WINDOW_MS) {
-          continue;
-        }
-
-        let matches = false;
-        if (item.kind === "good") {
-          matches = item.lane === lane;
-        } else {
-          matches = lane === "center" || source === "swipe";
-        }
-
-        if (!matches) {
-          continue;
-        }
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = i;
-        }
+    for (let i = 0; i < currentItems.length; i += 1) {
+      const item = currentItems[i];
+      if (item.resolved) {
+        continue;
+      }
+      const hitTime = item.spawnMs + FALL_MS;
+      const distance = Math.abs(hitTime - currentClock);
+      if (distance > HIT_WINDOW_MS) {
+        continue;
       }
 
-      if (bestIndex >= 0) {
-        selected = next[bestIndex];
-        next[bestIndex] = {
-          ...next[bestIndex],
-          resolved: true,
-          resolvedAt: clockMs,
-        };
+      let matches = false;
+      if (item.kind === "good") {
+        matches = item.lane === lane;
+      } else {
+        matches = lane === "center" || source === "swipe";
       }
 
-      return next;
-    });
+      if (!matches) {
+        continue;
+      }
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = i;
+        selected = item;
+      }
+    }
 
     flashLane(lane);
 
     if (!selected) {
       setFeedback("Feel the groove!");
+      setLastAction({ lane, time: currentClock, result: "miss" });
+      setCombo(0); // Reset combo on miss
       return;
     }
 
-    const hitDistance = Math.abs(selected.spawnMs + FALL_MS - clockMs);
+    // Mark item as resolved in state
+    setItems((current) =>
+      current.map((item, idx) =>
+        idx === bestIndex || item.id === selected.id
+          ? { ...item, resolved: true, resolvedAt: currentClock }
+          : item
+      )
+    );
+
+    const hitDistance = Math.abs(selected.spawnMs + FALL_MS - currentClock);
 
     if (selected.kind === "hazard") {
       setFeedback(choice(HAZARD_LINES));
       setPartyMeter((value) => clamp(value + 5, 0, 100));
+      setLastAction({ lane, time: currentClock, result: "dodge" });
+      vibrate(30); // Short buzz for dodge
+      spawnHitParticles(LANE_X[lane], true);
+      triggerMeterBump();
+      // Combo continues on successful dodge
+      setCombo((c) => {
+        const next = c + 1;
+        setMaxCombo((m) => Math.max(m, next));
+        return next;
+      });
       return;
     }
 
     const isPerfect = hitDistance <= PERFECT_WINDOW_MS;
-    setPartyMeter((value) => clamp(value + (isPerfect ? 12 : 9), 0, 100));
-    setFeedback(choice(SUCCESS_LINES));
+    
+    // Combo multiplier: 5+ combo = 1.5x, 10+ = 2x
+    const comboMultiplier = combo >= 10 ? 2 : combo >= 5 ? 1.5 : 1;
+    const basePoints = isPerfect ? 12 : 9;
+    const points = Math.round(basePoints * comboMultiplier);
+    
+    setPartyMeter((value) => clamp(value + points, 0, 100));
+    
+    // Update combo
+    setCombo((c) => {
+      const next = c + 1;
+      setMaxCombo((m) => Math.max(m, next));
+      return next;
+    });
+    
+    // Feedback with combo info
+    const comboText = combo >= 5 ? ` (${combo + 1}x combo!)` : "";
+    setFeedback(choice(SUCCESS_LINES) + comboText);
+    setLastAction({ lane, time: currentClock, result: isPerfect ? "perfect" : "good" });
+    
+    // Haptic feedback
+    vibrate(isPerfect ? [50, 30, 50] : 40);
+    
+    // Visual effects
+    spawnHitParticles(LANE_X[lane], true);
+    triggerMeterBump();
+    
     if (isPerfect) {
       spawnPerfect();
     }
@@ -864,11 +1014,14 @@ function App() {
 
   return (
     <main
-      className={`game-root ${isShaking ? "shake" : ""}`}
+      className={`game-root ${isShaking ? "shake" : ""} ${phaseTransition ? "transitioning" : ""}`}
       onPointerDown={handleGlobalPointerDown}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Permanent subtle vignette */}
+      <div className="vignette-overlay" />
+      
       <section className="background-layer" aria-hidden="true">
         {backgroundMode === "video" && activeVideo ? (
           <video
@@ -899,6 +1052,40 @@ function App() {
       </section>
 
       <section className="stage-layer">
+        {/* Lane indicators at top */}
+        {phase === PHASE_RHYTHM && (
+          <div className="lane-indicators">
+            <div className={`lane-indicator left ${clockMs < laneFlashUntil.left ? "active" : ""}`}>
+              <span>🧀</span>
+            </div>
+            <div className={`lane-indicator center ${clockMs < laneFlashUntil.center ? "active" : ""}`}>
+              <span>🦈</span>
+            </div>
+            <div className={`lane-indicator right ${clockMs < laneFlashUntil.right ? "active" : ""}`}>
+              <span>🍵</span>
+            </div>
+          </div>
+        )}
+
+        {/* Hit particles */}
+        {hitParticles.map((p) => {
+          const age = (clockMs - p.spawnedAt) / 500;
+          const x = p.x + p.vx * age;
+          const y = p.y + p.vy * age + 50 * age * age;
+          return (
+            <span
+              key={p.id}
+              className={`hit-particle ${p.success ? "success" : "fail"}`}
+              style={{
+                left: `${x}%`,
+                top: `${y}%`,
+                opacity: 1 - age,
+                backgroundColor: `hsl(${p.hue}, 80%, 60%)`,
+              }}
+            />
+          );
+        })}
+
         <img className="shadow-blob" src={sprite.shadowBlob} alt="" style={{ left: `${playerX}%` }} />
 
         <div
@@ -954,12 +1141,15 @@ function App() {
       />
 
       <section className="ui-layer">
-        <div className="party-meter">
-          <span>PARTY METER</span>
+        <div className={`party-meter ${beatPulse ? "beat-pulse" : ""} ${meterBump ? "bump" : ""}`}>
+          <span>PARTY</span>
           <div className="party-meter-track">
-            <div className="party-meter-fill" style={{ width: `${meterPercent}%` }} />
+            <div className="party-meter-fill" style={{ width: `${meterPercent}%` }}>
+              <div className="meter-shimmer" />
+            </div>
           </div>
           <strong>{Math.round(meterPercent)}%</strong>
+          {combo >= 3 && <span className="combo-badge">{combo}x</span>}
         </div>
 
         <div className="feedback-box">{feedback}</div>
@@ -976,6 +1166,7 @@ function App() {
         {showOfflineMediaHint ? <p className="offline-hint">Offline media unavailable.</p> : null}
       </section>
 
+      {/* Full-height invisible tap zones */}
       <section className="controls">
         <button
           type="button"
@@ -984,9 +1175,8 @@ function App() {
             event.stopPropagation();
             performAction("left", "tap");
           }}
-        >
-          LEFT
-        </button>
+          aria-label="Left - Eat Cheese"
+        />
         <button
           type="button"
           className={clockMs < laneFlashUntil.center ? "flash" : ""}
@@ -994,9 +1184,8 @@ function App() {
             event.stopPropagation();
             performAction("center", "tap");
           }}
-        >
-          CENTER / SWIPE
-        </button>
+          aria-label="Center - Dodge Shark"
+        />
         <button
           type="button"
           className={clockMs < laneFlashUntil.right ? "flash" : ""}
@@ -1004,10 +1193,18 @@ function App() {
             event.stopPropagation();
             performAction("right", "tap");
           }}
-        >
-          RIGHT
-        </button>
+          aria-label="Right - Drink Tea"
+        />
       </section>
+
+      {/* Visible button labels at bottom */}
+      {phase === PHASE_RHYTHM && (
+        <div className="button-labels">
+          <div className={`button-label ${clockMs < laneFlashUntil.left ? "flash" : ""}`}>🧀 LEFT</div>
+          <div className={`button-label ${clockMs < laneFlashUntil.center ? "flash" : ""}`}>🦈 DODGE</div>
+          <div className={`button-label ${clockMs < laneFlashUntil.right ? "flash" : ""}`}>🍵 RIGHT</div>
+        </div>
+      )}
 
       {phase === PHASE_VICTORY ? (
         <section className="victory-layer">
@@ -1034,32 +1231,91 @@ function App() {
       ) : null}
 
       {phase === PHASE_LAUNCH ? (
-        <section className="launch-screen">
+        <section className={`launch-screen ${assetsLoaded ? "loaded" : ""}`}>
           {sprite.titleScreen ? <img className="title-screen-image" src={sprite.titleScreen} alt="The Full Weasel" /> : null}
 
-          <div className="launch-panel">
-            <h1>The Full Weasel</h1>
-            <button type="button" className="install-button" onPointerDown={(event) => event.stopPropagation()} onClick={handleInstallClick}>
-              {sprite.pwaGuide ? <img src={sprite.pwaGuide} alt="PWA install guide" /> : <span>Install Guide</span>}
-            </button>
-            <p className="install-note">
-              {installAvailable
-                ? "Install is ready on this device. Tap the guide button."
-                : "Tap the guide button first. If install prompt is unavailable, use browser menu > Add to Home screen."}
-            </p>
-            {installMessage ? <p className="install-message">{installMessage}</p> : null}
+          {!assetsLoaded ? (
+            <div className="loading-overlay">
+              <div className="loading-content">
+                <h2>🦦 Loading...</h2>
+                <div className="loading-bar">
+                  <div className="loading-fill" style={{ width: `${loadingProgress}%` }} />
+                </div>
+                <p>{loadingProgress}%</p>
+              </div>
+            </div>
+          ) : (
+            <div className="launch-panel">
+              <h1>The Full Weasel</h1>
+              
+              <div className="how-to-play">
+                <h2>How To Play</h2>
+                <ul className="instructions-list">
+                  <li><span className="lane-icon left">🧀</span> <strong>LEFT tap</strong> = eat Nana Cheese</li>
+                  <li><span className="lane-icon right">🍵</span> <strong>RIGHT tap</strong> = drink Iced Tea</li>
+                  <li><span className="lane-icon center">🦈</span> <strong>CENTER tap / swipe UP</strong> = dodge Shark</li>
+                </ul>
+                <p className="goal-text">Fill the PARTY METER to 100% to win!</p>
+              </div>
 
-            <button
-              type="button"
-              className="start-button"
-              onPointerDown={(event) => event.stopPropagation()}
-              onClick={startGame}
-            >
-              TAP TO START
-            </button>
-          </div>
+              <div className="practice-toggle">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={practiceMode}
+                    onChange={(e) => setPracticeMode(e.target.checked)}
+                  />
+                  <span className="toggle-slider" />
+                  Practice Mode (slower speed)
+                </label>
+              </div>
+
+              <button
+                type="button"
+                className="start-button"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={startGame}
+              >
+                🎉 TAP TO START 🎉
+              </button>
+            </div>
+          )}
         </section>
       ) : null}
+
+      {showDebug ? (
+        <section className="debug-overlay">
+          <div className="debug-content">
+            <strong>DEBUG</strong>
+            <p>Phase: {phase}</p>
+            <p>Clock: {Math.round(clockMs)}ms</p>
+            <p>Party: {Math.round(partyMeter)}%</p>
+            <p>Combo: {combo} (max: {maxCombo})</p>
+            <p>Items: {items.filter(i => !i.resolved).length}</p>
+            <p>Mode: {practiceMode ? "Practice" : "Normal"}</p>
+            <p>Last: {lastAction.lane || "-"} → {lastAction.result}</p>
+            <p className="debug-section">--- Hit Windows ---</p>
+            {items.filter(i => !i.resolved).slice(0, 3).map(item => {
+              const hitTime = item.spawnMs + FALL_MS;
+              const dist = hitTime - clockMs;
+              const inWindow = Math.abs(dist) <= HIT_WINDOW_MS;
+              return <p key={item.id} className={inWindow ? "in-window" : ""}>{item.lane}: {Math.round(dist)}ms {inWindow ? "✓" : ""}</p>;
+            })}
+          </div>
+          <button onClick={() => setShowDebug(false)}>✕</button>
+        </section>
+      ) : (
+        <button
+          className="debug-toggle"
+          onClick={() => setShowDebug(true)}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          🐛
+        </button>
+      )}
+
+      {/* Phase transition overlay */}
+      {phaseTransition && <div className="phase-transition-overlay" />}
     </main>
   );
 }

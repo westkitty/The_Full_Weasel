@@ -1,3 +1,6 @@
+/* Google Font import - must be first */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+
 :root {
   color-scheme: light;
   --ink: #1d1b27;
@@ -411,6 +414,118 @@ body,
   background: linear-gradient(180deg, #ffe470, #ffc95f);
 }
 
+/* How To Play Section */
+.how-to-play {
+  margin: 12px 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  text-align: left;
+}
+
+.how-to-play h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--ink);
+}
+
+.instructions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.instructions-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.instructions-list li:last-child {
+  border-bottom: none;
+}
+
+.lane-icon {
+  font-size: 1.3rem;
+  width: 28px;
+  text-align: center;
+}
+
+.goal-text {
+  margin: 12px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--sun), #ffb347);
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #3b1d11;
+}
+
+/* Debug Overlay */
+.debug-overlay {
+  position: absolute;
+  top: 70px;
+  right: 8px;
+  z-index: 100;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #0f0;
+  font-family: monospace;
+  font-size: 0.72rem;
+  max-width: 180px;
+  pointer-events: auto;
+}
+
+.debug-overlay .debug-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.debug-overlay p {
+  margin: 3px 0;
+}
+
+.debug-overlay strong {
+  color: #ff0;
+}
+
+.debug-overlay button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #333;
+  color: #fff;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.debug-toggle {
+  position: absolute;
+  top: 70px;
+  right: 8px;
+  z-index: 100;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 1rem;
+  opacity: 0.5;
+  pointer-events: auto;
+}
+
 @keyframes perfectPop {
   0% {
     opacity: 0;
@@ -493,4 +608,405 @@ body,
     width: min(760px, 92vw);
     margin-inline: auto;
   }
+}
+
+/* ============================================
+   PROFESSIONAL POLISH ADDITIONS
+   ============================================ */
+
+/* Font is imported at top of file */
+
+html, body, #root {
+  font-family: 'Nunito', 'Avenir Next', 'Trebuchet MS', sans-serif;
+}
+
+/* Permanent subtle vignette overlay */
+.vignette-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+/* Phase transition overlay */
+.phase-transition-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(255, 248, 230, 0.95);
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+.game-root.transitioning {
+  pointer-events: none;
+}
+
+/* Lane indicators at top of screen */
+.lane-indicators {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 8%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.lane-indicator {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  transition: all 0.15s ease;
+  opacity: 0.6;
+}
+
+.lane-indicator.active {
+  background: rgba(255, 230, 120, 0.9);
+  transform: scale(1.2);
+  opacity: 1;
+  box-shadow: 0 0 20px rgba(255, 220, 100, 0.8);
+}
+
+/* Hit particles */
+.hit-particle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  transform: translate(-50%, -50%);
+}
+
+.hit-particle.success {
+  box-shadow: 0 0 8px rgba(255, 220, 100, 0.8);
+}
+
+.hit-particle.fail {
+  box-shadow: 0 0 8px rgba(255, 80, 80, 0.8);
+}
+
+/* Enhanced party meter */
+.party-meter {
+  position: relative;
+  transition: transform 0.1s ease;
+}
+
+.party-meter.beat-pulse {
+  box-shadow: 0 0 20px rgba(255, 200, 100, 0.6);
+}
+
+.party-meter.bump {
+  transform: scale(1.03);
+}
+
+.party-meter-fill {
+  position: relative;
+  overflow: hidden;
+}
+
+.meter-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.combo-badge {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 12px;
+  animation: comboPulse 0.5s ease infinite alternate;
+}
+
+/* Practice mode toggle */
+.practice-toggle {
+  margin: 12px 0;
+  text-align: center;
+}
+
+.practice-toggle label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.practice-toggle input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 26px;
+  transition: background 0.3s;
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.practice-toggle input:checked + .toggle-slider {
+  background: linear-gradient(90deg, var(--sun), var(--warm));
+}
+
+.practice-toggle input:checked + .toggle-slider::after {
+  transform: translateX(22px);
+}
+
+/* Loading screen */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 250, 240, 0.98);
+  z-index: 25;
+}
+
+.loading-content {
+  text-align: center;
+  padding: 30px;
+}
+
+.loading-content h2 {
+  font-size: 1.5rem;
+  margin: 0 0 20px;
+  animation: loadingBounce 1s ease infinite;
+}
+
+.loading-bar {
+  width: 200px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.loading-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sun), var(--warm));
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.loading-content p {
+  margin: 10px 0 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.launch-screen.loaded .launch-panel {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Enhanced button styles */
+.controls button {
+  transition: all 0.1s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.controls button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
+  pointer-events: none;
+}
+
+.controls button:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(15, 12, 20, 0.15);
+}
+
+.controls button:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.start-button {
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  pointer-events: none;
+}
+
+.start-button:active {
+  transform: scale(0.97);
+}
+
+.start-button:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* Enhanced debug overlay */
+.debug-overlay .debug-section {
+  color: #888;
+  margin-top: 8px;
+  font-size: 0.65rem;
+}
+
+.debug-overlay .in-window {
+  color: #0f0 !important;
+  font-weight: bold;
+}
+
+/* Keyframe animations */
+@keyframes shimmer {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+@keyframes comboPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+@keyframes loadingBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Full-height tap zones for better mobile input */
+.controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 12;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.controls button {
+  pointer-events: auto;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  font-size: 0;
+  color: transparent;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.controls button.flash {
+  opacity: 1;
+  background: rgba(255, 230, 100, 0.25);
+}
+
+.controls button:active {
+  opacity: 1;
+  background: rgba(255, 230, 100, 0.35);
+  transform: none;
+}
+
+/* Visible button labels at bottom */
+.controls::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  height: 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  pointer-events: none;
+}
+
+/* Button label strip */
+.button-labels {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  z-index: 13;
+  pointer-events: none;
+}
+
+.button-label {
+  padding: 13px 8px;
+  border-radius: 15px;
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: var(--ink);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 242, 210, 0.9));
+  box-shadow: 0 5px 14px rgba(15, 12, 20, 0.2);
+  text-align: center;
+}
+
+.button-label.flash {
+  background: linear-gradient(180deg, #fff6c7, #ffde78);
 }

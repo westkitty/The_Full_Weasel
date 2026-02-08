@@ -1,0 +1,27 @@
+{
+  "name": "dexter_dance_min_3",
+  "frameSize": [
+    512,
+    512
+  ],
+  "frames": [
+    {
+      "file": "dexter_dance_01.png",
+      "ms": 120
+    },
+    {
+      "file": "dexter_dance_02.png",
+      "ms": 120
+    },
+    {
+      "file": "dexter_dance_03.png",
+      "ms": 120
+    },
+    {
+      "file": "dexter_dance_02.png",
+      "ms": 120
+    }
+  ],
+  "recommendedLoop": "pingpong",
+  "notes": "Bare-minimum dance loop: 3 poses + center return. Replace with real hand-drawn frames later."
+}
