@@ -142,6 +142,7 @@ function App() {
   const [items, setItems] = useState([]);
   const [sharks, setSharks] = useState([]);
   const [hitReactionAt, setHitReactionAt] = useState(null);
+  const [celebrationUntil, setCelebrationUntil] = useState(0);
   const [shakeUntil, setShakeUntil] = useState(0);
   const [playerLane, setPlayerLane] = useState("center");
   const [playerX, setPlayerX] = useState(PLAYER_X.center);
@@ -221,6 +222,7 @@ function App() {
       nanaCheese: getRole("item_nana_cheese", "/assets/sprites/items/item_nana_cheese.png"),
       icedTea: getRole("item_unsweetened_iced_tea", "/assets/sprites/items/item_unsweetened_iced_tea.png"),
       titleScreen: getRole("title_screen", ""),
+      joyfulPose: getRole("dexter_joyful", "/assets/sprites/poses/dexter_joyful.png"),
     };
   }, [roleMap]);
 
@@ -384,6 +386,12 @@ function App() {
     }
   }, [clockMs, hitReactionAt]);
 
+  useEffect(() => {
+    if (celebrationUntil > 0 && clockMs > celebrationUntil) {
+      setCelebrationUntil(0);
+    }
+  }, [clockMs, celebrationUntil]);
+
   // ============================================
   // ITEM SPAWNING (RHYTHM PHASE)
   // Alternates between cheese (left) and tea (right)
@@ -472,6 +480,7 @@ function App() {
           setPartyMeter((v) => clamp(v + 8, 0, 100));
           setFeedback(choice(SUCCESS_LINES));
           setLastAction({ lane: collectedItem.lane, time: clockMs, result: "collect" });
+          setCelebrationUntil(clockMs + 500);
           triggerMeterBump();
           spawnHitParticles(LANE_X[collectedItem.lane], true);
           vibrate(40);
@@ -1017,6 +1026,7 @@ function App() {
   const danceFrameIndex = Math.floor((clockMs / 1000) * danceFps) % Math.max(1, danceFrames.length);
 
   const showHit = hitReactionAt !== null;
+  const showCelebration = celebrationUntil > 0 && clockMs <= celebrationUntil;
   const hitIndex = clamp(Math.floor(((clockMs - (hitReactionAt || 0)) / 1000) * 15), 0, sprite.hitFrames.length - 1);
 
   const spotlightOpacity = phase === PHASE_STRIP || phase === PHASE_VICTORY || phase === PHASE_END ? 0.74 : 0;
@@ -1120,7 +1130,9 @@ function App() {
             bottom: `${12 + jumpY}vh`,
           }}
         >
-          {showHit ? (
+          {showCelebration ? (
+            <img className="dexter-frame dexter-celebrate" src={sprite.joyfulPose} alt="Dexter celebrates" />
+          ) : showHit ? (
             <img className="dexter-frame" src={sprite.hitFrames[hitIndex]} alt="Dexter reacts" />
           ) : (
             <img className="dexter-frame" src={danceFrames[danceFrameIndex]} alt="Dexter dances" />

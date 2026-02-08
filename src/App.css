@@ -202,6 +202,18 @@ body,
   image-rendering: auto;
 }
 
+.dexter-celebrate {
+  animation: celebratePop 0.5s ease-out;
+}
+
+@keyframes celebratePop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.15) rotate(-3deg); }
+  50% { transform: scale(1.05) rotate(3deg); }
+  75% { transform: scale(1.1) rotate(-1deg); }
+  100% { transform: scale(1); }
+}
+
 /* ============================================
    FLYING COSTUME PIECES
    ============================================ */
@@ -570,21 +582,21 @@ body,
 
 .victory-title {
   position: absolute;
-  top: 12vh;
+  top: 8vh;
   left: 50%;
   transform: translateX(-50%);
   width: min(96vw, 780px);
   margin: 0;
   text-align: center;
   color: #fff8ea;
-  text-shadow: 0 4px 0 rgba(30, 17, 5, 0.5), 0 0 30px rgba(255, 200, 100, 0.5);
-  font-size: clamp(1.5rem, 7vw, 3.5rem);
+  text-shadow: 0 6px 0 rgba(30, 17, 5, 0.6), 0 0 40px rgba(255, 200, 100, 0.6);
+  font-size: clamp(2.5rem, 14vw, 6rem);
   animation: victoryPop 0.6s ease-out;
 }
 
 .victory-quote {
   position: absolute;
-  top: 22vh;
+  top: 26vh;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
