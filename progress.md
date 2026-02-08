@@ -1,0 +1,23 @@
+Original prompt: Build and ship a finished Android-friendly React PWA game ("The Full Weasel") using only local assets, with full asset packaging/reporting, service worker + manifest, successful static build, and deployment instructions.
+
+- Initialized a new Vite + React toolchain in-place because no existing package.json/toolchain was present in this repository.
+- Implemented full game loop and phase state machine in `src/App.jsx`.
+- Added mobile-first UI/animations/control zones in `src/App.css`.
+- Added PWA files (`public/manifest.webmanifest`, `public/sw.js`) and service worker registration (`src/main.jsx`).
+- Added automated asset prep pipeline (`scripts/prepare-assets.mjs`) for copying assets, creating `public/assets/manifest.json`, creating root `ASSET_REPORT.json`, and generating icons.
+- Local network constraints blocked npm registry access (`ENOTFOUND`), so dependencies were sourced offline from an existing local project's `node_modules` and copied into this workspace.
+- Ran `npm run prepare-assets`: generated `public/assets/manifest.json`, `ASSET_REPORT.json`, and icon outputs in `public/icons/`.
+- Ran `npm run build` successfully: output generated in `dist/` with bundled JS/CSS, service worker, webmanifest, icons, and copied assets.
+- Verified built file presence in `dist/` for all required categories (sprites, backgrounds mp4+png fallback, music, `manifest.webmanifest`, `sw.js`, icons, `assets/manifest.json`).
+- Local HTTP binding is restricted by sandbox (`PermissionError: [Errno 1] Operation not permitted`), so static-server runtime curl checks could not be completed in this environment.
+- Playwright skill runner dependency (`playwright`) is not locally installed and cannot be fetched due network restrictions, so automated visual loop checks could not run here.
+- Replaced gameplay runtime with a cleaner implementation prioritizing reliable left/right input and less strict timing windows.
+- Added first-launch title/install flow using `assets_raw/Title_Screen.png` and `assets_raw/PWA_guide.png`.
+- Implemented `beforeinstallprompt` handling for one-tap install prompt when browser allows it, with Android fallback instructions when not available.
+- Switched dance visuals to clean transparent frames (`dexter_dance_01..03`) to avoid sloppy background artifacts.
+- Dropped costume overlay/popping layers due visual quality concerns; Phase 2 now focuses on rapid-tap popoff energy + sparkles.
+- Updated `scripts/prepare-assets.mjs` to package title, PWA guide, clean dance frames, and loop frames into `public/assets` and manifests.
+- Rebuilt successfully (`npm run build`) and verified `HTTP 200` serving on LAN via `http://10.0.0.126:4173/`.
+- Implemented explicit Dexter lane movement state (`playerLane` + `playerX`) and bound sprite+shadow x-position to lane.
+- Left/right/center actions now always move Dexter in rhythm/popoff phases, with visual transition.
+- Rebuilt (`npm run build`) and verified LAN server still returns updated bundle (`index-VzMFskRA.js`) at `http://10.0.0.126:4173/`.

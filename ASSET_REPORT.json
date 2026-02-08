@@ -1,0 +1,697 @@
+{
+  "generatedAt": "2026-02-08T22:09:34.872Z",
+  "toolchain": {
+    "detected": "vite (created in this run because no existing package.json toolchain was present)",
+    "buildOutput": "dist"
+  },
+  "chosenAssets": {
+    "sprites": [
+      {
+        "role": "dance_base",
+        "source": "assets_raw/dance loop/dex_dance_loop_sheet_2x4.png",
+        "destination": "public/assets/sprites/dance/dex_dance_loop_sheet_2x4.png",
+        "url": "/assets/sprites/dance/dex_dance_loop_sheet_2x4.png",
+        "sizeBytes": 2360746,
+        "reason": "Core 8-frame dance loop used during gameplay and victory."
+      },
+      {
+        "role": "dance_hat",
+        "source": "assets_raw/dance loop/dex_dance_hat_sheet_2x4.png",
+        "destination": "public/assets/sprites/dance/dex_dance_hat_sheet_2x4.png",
+        "url": "/assets/sprites/dance/dex_dance_hat_sheet_2x4.png",
+        "sizeBytes": 2331013,
+        "reason": "Start gate costume preview."
+      },
+      {
+        "role": "dance_sweater",
+        "source": "assets_raw/dance loop/dex_dance_sweater_sheet_2x4.png",
+        "destination": "public/assets/sprites/dance/dex_dance_sweater_sheet_2x4.png",
+        "url": "/assets/sprites/dance/dex_dance_sweater_sheet_2x4.png",
+        "sizeBytes": 1741862,
+        "reason": "Phase 2 costume state after hat pop."
+      },
+      {
+        "role": "dance_hat_sweater",
+        "source": "assets_raw/dance loop/dex_dance_hat_sweater_sheet_2x4.png",
+        "destination": "public/assets/sprites/dance/dex_dance_hat_sweater_sheet_2x4.png",
+        "url": "/assets/sprites/dance/dex_dance_hat_sweater_sheet_2x4.png",
+        "sizeBytes": 1712739,
+        "reason": "Packaged required variant for wardrobe set completeness."
+      },
+      {
+        "role": "dance_hat_sweater_bowtie",
+        "source": "assets_raw/dance loop/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
+        "destination": "public/assets/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
+        "url": "/assets/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
+        "sizeBytes": 1714547,
+        "reason": "Phase 1 full birthday outfit base sheet."
+      },
+      {
+        "role": "dance_frame_01",
+        "source": "assets_raw/dance loop/dex_dance_loop_01.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_01.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_01.png",
+        "sizeBytes": 358765,
+        "reason": "Single-frame dance loop animation frame 1."
+      },
+      {
+        "role": "dance_frame_02",
+        "source": "assets_raw/dance loop/dex_dance_loop_02.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_02.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_02.png",
+        "sizeBytes": 364065,
+        "reason": "Single-frame dance loop animation frame 2."
+      },
+      {
+        "role": "dance_frame_03",
+        "source": "assets_raw/dance loop/dex_dance_loop_03.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_03.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_03.png",
+        "sizeBytes": 367910,
+        "reason": "Single-frame dance loop animation frame 3."
+      },
+      {
+        "role": "dance_frame_04",
+        "source": "assets_raw/dance loop/dex_dance_loop_04.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_04.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_04.png",
+        "sizeBytes": 363478,
+        "reason": "Single-frame dance loop animation frame 4."
+      },
+      {
+        "role": "dance_frame_05",
+        "source": "assets_raw/dance loop/dex_dance_loop_05.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_05.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_05.png",
+        "sizeBytes": 359406,
+        "reason": "Single-frame dance loop animation frame 5."
+      },
+      {
+        "role": "dance_frame_06",
+        "source": "assets_raw/dance loop/dex_dance_loop_06.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_06.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_06.png",
+        "sizeBytes": 364858,
+        "reason": "Single-frame dance loop animation frame 6."
+      },
+      {
+        "role": "dance_frame_07",
+        "source": "assets_raw/dance loop/dex_dance_loop_07.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_07.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_07.png",
+        "sizeBytes": 370937,
+        "reason": "Single-frame dance loop animation frame 7."
+      },
+      {
+        "role": "dance_frame_08",
+        "source": "assets_raw/dance loop/dex_dance_loop_08.png",
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_08.png",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_08.png",
+        "sizeBytes": 353484,
+        "reason": "Single-frame dance loop animation frame 8."
+      },
+      {
+        "role": "dance_clean_01",
+        "source": "assets_raw/dexter_dance_01.png",
+        "destination": "public/assets/sprites/dance/dexter_dance_01.png",
+        "url": "/assets/sprites/dance/dexter_dance_01.png",
+        "sizeBytes": 186143,
+        "reason": "Clean transparent dance frame 1 with no baked background."
+      },
+      {
+        "role": "dance_clean_02",
+        "source": "assets_raw/dexter_dance_02.png",
+        "destination": "public/assets/sprites/dance/dexter_dance_02.png",
+        "url": "/assets/sprites/dance/dexter_dance_02.png",
+        "sizeBytes": 186571,
+        "reason": "Clean transparent dance frame 2 with no baked background."
+      },
+      {
+        "role": "dance_clean_03",
+        "source": "assets_raw/dexter_dance_03.png",
+        "destination": "public/assets/sprites/dance/dexter_dance_03.png",
+        "url": "/assets/sprites/dance/dexter_dance_03.png",
+        "sizeBytes": 186997,
+        "reason": "Clean transparent dance frame 3 with no baked background."
+      },
+      {
+        "role": "hit_react_01",
+        "source": "assets_raw/shark_hit/dex_hit_react_01.png",
+        "destination": "public/assets/sprites/hit/dex_hit_react_01.png",
+        "url": "/assets/sprites/hit/dex_hit_react_01.png",
+        "sizeBytes": 103385,
+        "reason": "Hazard reaction frame 1."
+      },
+      {
+        "role": "hit_react_02",
+        "source": "assets_raw/shark_hit/dex_hit_react_02.png",
+        "destination": "public/assets/sprites/hit/dex_hit_react_02.png",
+        "url": "/assets/sprites/hit/dex_hit_react_02.png",
+        "sizeBytes": 111781,
+        "reason": "Hazard reaction frame 2."
+      },
+      {
+        "role": "hit_react_03",
+        "source": "assets_raw/shark_hit/dex_hit_react_03.png",
+        "destination": "public/assets/sprites/hit/dex_hit_react_03.png",
+        "url": "/assets/sprites/hit/dex_hit_react_03.png",
+        "sizeBytes": 110983,
+        "reason": "Hazard reaction frame 3."
+      },
+      {
+        "role": "perfect_pop",
+        "source": "assets_raw/dex_perfect_pop.png",
+        "destination": "public/assets/sprites/ui/dex_perfect_pop.png",
+        "url": "/assets/sprites/ui/dex_perfect_pop.png",
+        "sizeBytes": 129042,
+        "reason": "Perfect hit overlay animation."
+      },
+      {
+        "role": "shadow_blob",
+        "source": "assets_raw/shadow_blob.png",
+        "destination": "public/assets/sprites/ui/shadow_blob.png",
+        "url": "/assets/sprites/ui/shadow_blob.png",
+        "sizeBytes": 12761,
+        "reason": "Dexter foot shadow layer."
+      },
+      {
+        "role": "spotlight_vignette",
+        "source": "assets_raw/spotlight_vignette.png",
+        "destination": "public/assets/sprites/ui/spotlight_vignette.png",
+        "url": "/assets/sprites/ui/spotlight_vignette.png",
+        "sizeBytes": 162662,
+        "reason": "Phase 2 dramatic spotlight overlay."
+      },
+      {
+        "role": "censor_slam",
+        "source": "assets_raw/censor_slam.png",
+        "destination": "public/assets/sprites/ui/censor_slam.png",
+        "url": "/assets/sprites/ui/censor_slam.png",
+        "sizeBytes": 17802,
+        "reason": "Phase 3 slam overlay."
+      },
+      {
+        "role": "victory_subtext",
+        "source": "assets_raw/victory_subtext.png",
+        "destination": "public/assets/sprites/ui/victory_subtext.png",
+        "url": "/assets/sprites/ui/victory_subtext.png",
+        "sizeBytes": 13296,
+        "reason": "Victory subtitle support art."
+      },
+      {
+        "role": "title_screen",
+        "source": "assets_raw/Title_Screen.png",
+        "destination": "public/assets/sprites/ui/Title_Screen.png",
+        "url": "/assets/sprites/ui/Title_Screen.png",
+        "sizeBytes": 7241904,
+        "reason": "Launch screen art used before gameplay starts."
+      },
+      {
+        "role": "pwa_guide",
+        "source": "assets_raw/PWA_guide.png",
+        "destination": "public/assets/sprites/ui/PWA_guide.png",
+        "url": "/assets/sprites/ui/PWA_guide.png",
+        "sizeBytes": 5854486,
+        "reason": "PWA install guide image used as the first on-screen call-to-action."
+      },
+      {
+        "role": "hazard_shark_fin",
+        "source": "assets_raw/hazard_shark_fin.png",
+        "destination": "public/assets/sprites/items/hazard_shark_fin.png",
+        "url": "/assets/sprites/items/hazard_shark_fin.png",
+        "sizeBytes": 37411,
+        "reason": "Hazard lane object."
+      },
+      {
+        "role": "item_nana_cheese",
+        "source": "assets_raw/item_nana_cheese.png",
+        "destination": "public/assets/sprites/items/item_nana_cheese.png",
+        "url": "/assets/sprites/items/item_nana_cheese.png",
+        "sizeBytes": 24684,
+        "reason": "Left lane good item."
+      },
+      {
+        "role": "item_unsweetened_iced_tea",
+        "source": "assets_raw/item_unsweetened_iced_tea.png",
+        "destination": "public/assets/sprites/items/item_unsweetened_iced_tea.png",
+        "url": "/assets/sprites/items/item_unsweetened_iced_tea.png",
+        "sizeBytes": 4838,
+        "reason": "Right lane good item."
+      },
+      {
+        "role": "overlay_party_hat",
+        "source": "assets_raw/overlay_party_hat.png",
+        "destination": "public/assets/sprites/overlays/overlay_party_hat.png",
+        "url": "/assets/sprites/overlays/overlay_party_hat.png",
+        "sizeBytes": 37507,
+        "reason": "Hat pop burst layer."
+      },
+      {
+        "role": "overlay_birthday_sweater",
+        "source": "assets_raw/overlay_birthday_sweater.png",
+        "destination": "public/assets/sprites/overlays/overlay_birthday_sweater.png",
+        "url": "/assets/sprites/overlays/overlay_birthday_sweater.png",
+        "sizeBytes": 108149,
+        "reason": "Sweater pop burst layer."
+      },
+      {
+        "role": "overlay_bowtie",
+        "source": "assets_raw/overlay_bowtie.png",
+        "destination": "public/assets/sprites/overlays/overlay_bowtie.png",
+        "url": "/assets/sprites/overlays/overlay_bowtie.png",
+        "sizeBytes": 14135,
+        "reason": "Bowtie overlay and pop burst layer."
+      },
+      {
+        "role": "dexter_neutral",
+        "source": "assets_raw/dexter_neutral.png",
+        "destination": "public/assets/sprites/poses/dexter_neutral.png",
+        "url": "/assets/sprites/poses/dexter_neutral.png",
+        "sizeBytes": 154533,
+        "reason": "Start gate pose."
+      },
+      {
+        "role": "dexter_focused",
+        "source": "assets_raw/dexter_focused.png",
+        "destination": "public/assets/sprites/poses/dexter_focused.png",
+        "url": "/assets/sprites/poses/dexter_focused.png",
+        "sizeBytes": 182520,
+        "reason": "Rhythm pose badge."
+      },
+      {
+        "role": "dexter_excited",
+        "source": "assets_raw/dexter_excited.png",
+        "destination": "public/assets/sprites/poses/dexter_excited.png",
+        "url": "/assets/sprites/poses/dexter_excited.png",
+        "sizeBytes": 191055,
+        "reason": "Popoff phase pose badge."
+      },
+      {
+        "role": "dexter_joyful",
+        "source": "assets_raw/dexter_joyful.png",
+        "destination": "public/assets/sprites/poses/dexter_joyful.png",
+        "url": "/assets/sprites/poses/dexter_joyful.png",
+        "sizeBytes": 181296,
+        "reason": "Joyful pose badge and icon fallback source."
+      },
+      {
+        "role": "dexter_proud",
+        "source": "assets_raw/dexter_proud.png",
+        "destination": "public/assets/sprites/poses/dexter_proud.png",
+        "url": "/assets/sprites/poses/dexter_proud.png",
+        "sizeBytes": 206398,
+        "reason": "Victory pose badge and icon source preference."
+      }
+    ],
+    "backgrounds": {
+      "mp4": [
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-25-06.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-25-06.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-25-06.mp4",
+          "sizeBytes": 7269290,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-25-49.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-25-49.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-25-49.mp4",
+          "sizeBytes": 8541468,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-26-44.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-26-44.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-26-44.mp4",
+          "sizeBytes": 4295004,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-27-23.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-27-23.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-27-23.mp4",
+          "sizeBytes": 4470852,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-27-24.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-27-24.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-27-24.mp4",
+          "sizeBytes": 4470852,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-28-17.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-28-17.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-28-17.mp4",
+          "sizeBytes": 1593466,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-30-04.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-30-04.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-30-04.mp4",
+          "sizeBytes": 1840667,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-31-03.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-31-03.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-31-03.mp4",
+          "sizeBytes": 3759619,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        },
+        {
+          "role": "background_mp4",
+          "source": "assets_backgrounds/grok_video_2026-02-08-15-32-25.mp4",
+          "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-32-25.mp4",
+          "url": "/assets/backgrounds/grok_video_2026-02-08-15-32-25.mp4",
+          "sizeBytes": 4224633,
+          "reason": "Primary animated background loop.",
+          "fallbackType": "mp4"
+        }
+      ],
+      "pngFallback": [
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582054016.png",
+          "destination": "public/assets/backgrounds/1770582054016.png",
+          "url": "/assets/backgrounds/1770582054016.png",
+          "sizeBytes": 6333771,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        },
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582057020.png",
+          "destination": "public/assets/backgrounds/1770582057020.png",
+          "url": "/assets/backgrounds/1770582057020.png",
+          "sizeBytes": 6312052,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        },
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582061308.png",
+          "destination": "public/assets/backgrounds/1770582061308.png",
+          "url": "/assets/backgrounds/1770582061308.png",
+          "sizeBytes": 6967417,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        },
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582074136.png",
+          "destination": "public/assets/backgrounds/1770582074136.png",
+          "url": "/assets/backgrounds/1770582074136.png",
+          "sizeBytes": 5899045,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        },
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582075405.png",
+          "destination": "public/assets/backgrounds/1770582075405.png",
+          "url": "/assets/backgrounds/1770582075405.png",
+          "sizeBytes": 6440266,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        },
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582078902.png",
+          "destination": "public/assets/backgrounds/1770582078902.png",
+          "url": "/assets/backgrounds/1770582078902.png",
+          "sizeBytes": 5901303,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        },
+        {
+          "role": "background_png_fallback",
+          "source": "assets_backgrounds/1770582089865.png",
+          "destination": "public/assets/backgrounds/1770582089865.png",
+          "url": "/assets/backgrounds/1770582089865.png",
+          "sizeBytes": 6967519,
+          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "fallbackType": "png"
+        }
+      ]
+    },
+    "music": [
+      {
+        "role": "music_track",
+        "source": "assets_music/The Full Weasel (1).mp3",
+        "destination": "public/assets/music/The Full Weasel (1).mp3",
+        "url": "/assets/music/The Full Weasel (1).mp3",
+        "sizeBytes": 2782139,
+        "reason": "Included in random infinite playlist."
+      },
+      {
+        "role": "music_track",
+        "source": "assets_music/The Full Weasel (2).mp3",
+        "destination": "public/assets/music/The Full Weasel (2).mp3",
+        "url": "/assets/music/The Full Weasel (2).mp3",
+        "sizeBytes": 2392425,
+        "reason": "Included in random infinite playlist."
+      },
+      {
+        "role": "music_track",
+        "source": "assets_music/The Full Weasel (3).mp3",
+        "destination": "public/assets/music/The Full Weasel (3).mp3",
+        "url": "/assets/music/The Full Weasel (3).mp3",
+        "sizeBytes": 2487727,
+        "reason": "Included in random infinite playlist."
+      },
+      {
+        "role": "music_track",
+        "source": "assets_music/The Full Weasel (4).mp3",
+        "destination": "public/assets/music/The Full Weasel (4).mp3",
+        "url": "/assets/music/The Full Weasel (4).mp3",
+        "sizeBytes": 2992447,
+        "reason": "Included in random infinite playlist."
+      },
+      {
+        "role": "music_track",
+        "source": "assets_music/The Full Weasel (5).mp3",
+        "destination": "public/assets/music/The Full Weasel (5).mp3",
+        "url": "/assets/music/The Full Weasel (5).mp3",
+        "sizeBytes": 2358756,
+        "reason": "Included in random infinite playlist."
+      },
+      {
+        "role": "music_track",
+        "source": "assets_music/The Full Weasel.mp3",
+        "destination": "public/assets/music/The Full Weasel.mp3",
+        "url": "/assets/music/The Full Weasel.mp3",
+        "sizeBytes": 2853935,
+        "reason": "Included in random infinite playlist."
+      }
+    ]
+  },
+  "copyDestinations": {
+    "sprites": "public/assets/sprites",
+    "backgrounds": "public/assets/backgrounds",
+    "music": "public/assets/music",
+    "icons": "public/icons"
+  },
+  "rejectedAssets": [
+    {
+      "source": "assets_raw/017E1757-5662-4141-B928-1FD053122032.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/05544BAA-FAD9-4B07-A800-08ABF85B8425.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/0E50480E-438A-4384-A55A-8943221B342C.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/0EF08891-9F06-40EE-AA0C-A43C83C96C69.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/0FA348B8-2B77-4B95-884E-F9B221BA68C5.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/10AF8E0A-82D5-45D1-A956-67620676E921.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/1E52774C-33E0-4DC0-A8C1-FC0241489B82.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/25D4C24A-E448-4AE1-B1F2-3883321D3C23.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/2CDF981D-976B-46F3-829E-E9E3AD7530A0.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/373B00CC-FD3A-4796-A58B-DBEB18E8A270.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/3D955D58-C58A-4607-B406-16DDFAEC14FF.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/460D6655-BC3B-4CBC-A43C-0D03FEBE40F3.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/56E9EA23-4D50-4A8B-859B-F0976784A97F.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/5A1C6EF3-5B54-4EC9-9F07-EDD2046AE390.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/61487AA1-4C44-46AF-9996-6FC038D6CA1A.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/659CF243-C851-48F6-A680-1C149C5392E3.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/67A4DC52-C661-4497-A9D6-28A28D04D403.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/728D4AB0-D05B-43E8-9883-D8DDCC99F771.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/73AF4C51-4BB3-4DAE-BF61-C32976997CF4.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/77FEF7A6-5E2F-481F-AEBE-81DDEAC562F1.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/7EE293A2-2887-4444-A0EB-733C927E3ADB.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/807F11A3-FDC9-4E80-9D20-6A0A4F0E8C09.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/81BD66E1-10BF-4C7B-8ECA-BB6A4548BD42.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/83F91F84-BFF8-4CB0-A649-EC2DC84240D0.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/8A1FD8EE-DA12-433D-8EE2-397C21D3CAEA.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/8CFFE291-A2F1-4DDD-8BB5-1AA049B7ABE0.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/949111E4-544A-4419-8FEF-BB6898C5434E.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/95808AC5-63ED-4473-8385-2C4AD01550F1.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/98E89888-C8A3-4967-8C70-1B7A69252714.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/B82330FC-CC15-4B52-B50F-F21F26544712.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/C34262DF-1EB3-4C30-9E5B-009B660E80A5.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/C346435C-DF35-4935-892E-B878A1CE5299.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/CE424254-B8A0-4932-88AB-6759624065F0.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/DDB07BA4-E276-4E14-8653-41EA2C58B5EA.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/EA275D66-71FF-4EE9-A689-8370EC9C5E63.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/F3455713-6B89-4B01-B895-807EB61ACD06.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/F4865DDE-5885-4198-BFFC-E511F9B81E67.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/F6D1A253-D12F-44A4-BCC3-D6AD02C9B7A6.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/FE7593FF-74EA-4F81-8A1D-CF84561FAE10.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/dexter_dance_min_assets.json",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/dexter_dance_sheet_3x512.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    },
+    {
+      "source": "assets_raw/shark_hit/C34262DF-1EB3-4C30-9E5B-009B660E80A5.png",
+      "reason": "Not required by shipped game loop; excluded to keep payload smaller."
+    }
+  ],
+  "missingNeedsOrDegradedFallbacks": [
+    {
+      "type": "background_png_fallback_count",
+      "detail": "Only 7 PNG fallback frames exist in assets_backgrounds; shipped all available frames."
+    }
+  ],
+  "iconGeneration": {
+    "source": "assets_raw/The_Full_Weasel_Icon.png",
+    "output192": "public/icons/icon-192.png",
+    "output512": "public/icons/icon-512.png",
+    "method": "pillow",
+    "degraded": false,
+    "note": "Generated icons using Python Pillow trim/crop/resize."
+  }
+}
