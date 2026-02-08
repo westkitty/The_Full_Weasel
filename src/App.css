@@ -1,15 +1,27 @@
-/* Google Font import - must be first */
+/* ============================================
+   THE FULL WEASEL - GAME STYLES
+   ============================================ */
+
+/* Google Font import */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
 
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
 :root {
   color-scheme: light;
   --ink: #1d1b27;
-  --panel: rgba(255, 251, 236, 0.86);
+  --panel: rgba(255, 251, 236, 0.92);
   --warm: #ff6f61;
   --sun: #ffd966;
   --blue: #2d88ff;
+  --success: #4ade80;
+  --danger: #f87171;
 }
 
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
 * {
   box-sizing: border-box;
 }
@@ -23,11 +35,14 @@ body,
   overflow: hidden;
   touch-action: none;
   overscroll-behavior: none;
-  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: 'Nunito', 'Avenir Next', 'Trebuchet MS', sans-serif;
   background: radial-gradient(circle at 20% 15%, #ffe6bd, #ffd9c8 42%, #ffd2a7);
   color: var(--ink);
 }
 
+/* ============================================
+   GAME ROOT CONTAINER
+   ============================================ */
 .game-root {
   position: relative;
   width: 100%;
@@ -41,6 +56,20 @@ body,
   animation: shake 0.24s linear;
 }
 
+/* ============================================
+   VIGNETTE OVERLAY
+   ============================================ */
+.vignette-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+/* ============================================
+   BACKGROUND LAYER
+   ============================================ */
 .background-layer {
   position: absolute;
   inset: 0;
@@ -65,12 +94,75 @@ body,
   opacity: 0.54;
 }
 
+/* ============================================
+   STAGE LAYER (game elements)
+   ============================================ */
 .stage-layer {
   position: absolute;
   inset: 0;
   z-index: 3;
+  transition: transform 0.3s ease-out;
 }
 
+/* ============================================
+   LANE INDICATORS
+   ============================================ */
+.lane-indicators {
+  position: absolute;
+  top: 75px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 10%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.lane-indicator {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.15s ease;
+  opacity: 0.5;
+}
+
+.lane-indicator.active {
+  background: rgba(255, 230, 120, 0.95);
+  transform: scale(1.25);
+  opacity: 1;
+  box-shadow: 0 0 25px rgba(255, 220, 100, 0.9);
+}
+
+/* ============================================
+   HIT PARTICLES
+   ============================================ */
+.hit-particle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  transform: translate(-50%, -50%);
+}
+
+.hit-particle.success {
+  box-shadow: 0 0 8px rgba(255, 220, 100, 0.8);
+}
+
+.hit-particle.fail {
+  box-shadow: 0 0 8px rgba(255, 80, 80, 0.8);
+}
+
+/* ============================================
+   SHADOW BLOB
+   ============================================ */
 .shadow-blob {
   position: absolute;
   left: 50%;
@@ -79,21 +171,28 @@ body,
   width: min(44vw, 380px);
   filter: blur(2px);
   opacity: 0.74;
-  transition: left 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: left 150ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.2s, opacity 0.2s;
 }
 
+/* ============================================
+   DEXTER CHARACTER
+   ============================================ */
 .dexter-wrapper {
   position: absolute;
   left: 50%;
   bottom: 12vh;
   transform: translateX(-50%);
-  width: min(44vw, 410px);
-  max-width: 410px;
+  width: min(48vw, 420px);
+  max-width: 420px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: left 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: left 150ms cubic-bezier(0.2, 0.8, 0.2, 1), bottom 0.05s linear;
+}
+
+.dexter-wrapper.dexter-strip {
+  animation: stripPulse 0.3s ease infinite alternate;
 }
 
 .dexter-frame {
@@ -103,53 +202,108 @@ body,
   image-rendering: auto;
 }
 
+/* ============================================
+   FLYING COSTUME PIECES
+   ============================================ */
+.flying-costume {
+  position: absolute;
+  font-size: 3rem;
+  animation: flyOff 0.8s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.flying-costume.hat {
+  top: 5%;
+  left: 50%;
+}
+
+.flying-costume.sweater {
+  top: 35%;
+  left: 50%;
+}
+
+.flying-costume.bowtie {
+  top: 28%;
+  left: 50%;
+}
+
+/* ============================================
+   DROPPED BIRTHDAY HAT (ending gag)
+   ============================================ */
+.dropped-hat {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 4rem;
+  z-index: 12;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* ============================================
+   ITEMS LAYER
+   ============================================ */
 .item-layer {
   position: absolute;
   inset: 0;
+  pointer-events: none;
 }
 
+/* ============================================
+   FALLING ITEMS (cheese & iced tea)
+   ============================================ */
 .falling-item {
   position: absolute;
-  width: min(16vw, 92px);
+  width: min(20vw, 110px);
   transform: translate(-50%, -50%);
   will-change: top;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  transition: opacity 0.2s;
 }
 
-.falling-item.hazard {
-  filter: drop-shadow(0 0 8px rgba(253, 73, 73, 0.66));
+.falling-item.good.cheese {
+  animation: cheeseWobble 0.5s ease-in-out infinite;
 }
 
-.hit-line {
+.falling-item.good.tea {
+  animation: teaSplash 0.4s ease-in-out infinite;
+}
+
+/* ============================================
+   HORIZONTAL SHARKS
+   ============================================ */
+.horizontal-shark {
   position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 22vh;
-  height: 2px;
-  border-top: 2px dashed rgba(255, 252, 239, 0.75);
-  box-shadow: 0 0 10px rgba(255, 236, 174, 0.75);
+  width: min(26vw, 160px);
+  will-change: left;
+  filter: drop-shadow(0 0 16px rgba(253, 73, 73, 0.8));
+  z-index: 4;
 }
 
-.perfect-pop {
+.horizontal-shark.from-left {
+  animation: sharkSwimLeft 0.35s ease-in-out infinite;
+}
+
+.horizontal-shark.from-right {
+  animation: sharkSwimRight 0.35s ease-in-out infinite;
+}
+
+/* ============================================
+   COLLECTION ZONE INDICATOR (subtle)
+   ============================================ */
+.collect-zone {
   position: absolute;
-  width: 42%;
-  left: 50%;
-  top: 14%;
-  transform: translate(-50%, -50%);
-  animation: perfectPop 0.34s ease-out forwards;
+  left: 5%;
+  right: 5%;
+  border-top: 2px dashed rgba(255, 255, 255, 0.4);
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.4);
+  background: rgba(255, 230, 120, 0.08);
   pointer-events: none;
 }
 
-.sparkle {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fffcd1 0%, #ffe36a 52%, #f8b500 100%);
-  box-shadow: 0 0 11px rgba(255, 230, 120, 0.88);
-  animation: sparklePop 0.86s ease-out forwards;
-  pointer-events: none;
-}
-
+/* ============================================
+   SPOTLIGHT OVERLAY
+   ============================================ */
 .spotlight-overlay {
   position: absolute;
   inset: 0;
@@ -161,6 +315,36 @@ body,
   transition: opacity 400ms ease;
 }
 
+/* ============================================
+   PERFECT POP
+   ============================================ */
+.perfect-pop {
+  position: absolute;
+  width: 42%;
+  left: 50%;
+  top: 14%;
+  transform: translate(-50%, -50%);
+  animation: perfectPop 0.34s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ============================================
+   SPARKLES
+   ============================================ */
+.sparkle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffcd1 0%, #ffe36a 52%, #f8b500 100%);
+  box-shadow: 0 0 11px rgba(255, 230, 120, 0.88);
+  animation: sparklePop 0.86s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ============================================
+   UI LAYER
+   ============================================ */
 .ui-layer {
   position: absolute;
   inset: 0;
@@ -168,6 +352,9 @@ body,
   pointer-events: none;
 }
 
+/* ============================================
+   PARTY METER
+   ============================================ */
 .party-meter {
   position: absolute;
   top: max(12px, env(safe-area-inset-top));
@@ -183,11 +370,20 @@ body,
   backdrop-filter: blur(8px);
   font-size: 0.9rem;
   font-weight: 800;
+  transition: transform 0.1s ease;
+}
+
+.party-meter.beat-pulse {
+  box-shadow: 0 0 20px rgba(255, 200, 100, 0.6);
+}
+
+.party-meter.bump {
+  transform: scale(1.03);
 }
 
 .party-meter-track {
   width: 100%;
-  height: 12px;
+  height: 14px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.12);
   overflow: hidden;
@@ -198,43 +394,124 @@ body,
   border-radius: 10px;
   background: linear-gradient(90deg, var(--sun), #ff9968, var(--warm));
   transition: width 180ms ease;
+  position: relative;
+  overflow: hidden;
 }
 
+.meter-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================
+   ROUND INDICATOR
+   ============================================ */
+.round-indicator {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 55px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+/* ============================================
+   FEEDBACK BOX
+   ============================================ */
 .feedback-box {
   position: absolute;
-  top: 82px;
+  top: 130px;
   left: 50%;
   transform: translateX(-50%);
   width: min(92vw, 540px);
   text-align: center;
   font-weight: 900;
-  font-size: clamp(0.96rem, 3.1vw, 1.32rem);
+  font-size: clamp(1rem, 3.2vw, 1.4rem);
   color: #3b1d11;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-.popoff-card {
+/* ============================================
+   STRIP PHASE UI
+   ============================================ */
+.strip-ui {
   position: absolute;
   left: 50%;
-  bottom: 18.5vh;
+  bottom: 18vh;
   transform: translateX(-50%);
-  width: min(92vw, 560px);
-  border-radius: 16px;
-  background: rgba(255, 248, 225, 0.9);
-  padding: 12px 14px;
+  width: min(94vw, 500px);
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255, 248, 225, 0.95);
   text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
 }
 
-.popoff-card h2 {
-  margin: 0 0 6px;
-  font-size: clamp(1.08rem, 3.8vw, 1.56rem);
+.strip-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: var(--warm);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-.popoff-card p {
-  margin: 0;
+.strip-title.flashing {
+  animation: flashText 0.4s ease infinite alternate;
+}
+
+.strip-instruction {
+  margin: 0 0 12px;
   font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--ink);
 }
 
+.strip-progress {
+  width: 100%;
+  height: 18px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.strip-bar {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--sun), var(--warm), #ff4444);
+  transition: width 0.1s ease;
+}
+
+.strip-stages {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 2rem;
+}
+
+.strip-stages span {
+  transition: all 0.3s ease;
+}
+
+.strip-stages span.removed {
+  opacity: 0.3;
+  transform: scale(0.7);
+  filter: grayscale(1);
+}
+
+/* ============================================
+   OFFLINE HINT
+   ============================================ */
 .offline-hint {
   position: absolute;
   left: 50%;
@@ -248,38 +525,42 @@ body,
   font-size: 0.84rem;
 }
 
-.controls {
+/* ============================================
+   BUTTON LABELS (bottom controls display)
+   ============================================ */
+.button-labels {
   position: absolute;
   left: 10px;
   right: 10px;
   bottom: max(10px, env(safe-area-inset-bottom));
-  z-index: 12;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
+  z-index: 13;
+  pointer-events: none;
 }
 
-.controls button {
-  pointer-events: auto;
-  border: 0;
+.button-label {
+  padding: 14px 8px;
   border-radius: 15px;
-  padding: 13px 8px;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   font-weight: 900;
   color: var(--ink);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 242, 210, 0.9));
   box-shadow: 0 5px 14px rgba(15, 12, 20, 0.2);
-  touch-action: manipulation;
+  text-align: center;
+  transition: all 0.15s ease;
 }
 
-.controls button.flash {
+.button-label.active {
   background: linear-gradient(180deg, #fff6c7, #ffde78);
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(255, 200, 100, 0.5);
 }
 
-.controls button:active {
-  transform: translateY(1px);
-}
-
+/* ============================================
+   VICTORY LAYER
+   ============================================ */
 .victory-layer {
   position: absolute;
   inset: 0;
@@ -287,52 +568,58 @@ body,
   pointer-events: none;
 }
 
-.victory-layer h1 {
+.victory-title {
   position: absolute;
-  top: 17vh;
+  top: 12vh;
   left: 50%;
   transform: translateX(-50%);
   width: min(96vw, 780px);
   margin: 0;
   text-align: center;
   color: #fff8ea;
-  text-shadow: 0 3px 0 rgba(30, 17, 5, 0.42);
-  font-size: clamp(1.3rem, 6vw, 3.3rem);
+  text-shadow: 0 4px 0 rgba(30, 17, 5, 0.5), 0 0 30px rgba(255, 200, 100, 0.5);
+  font-size: clamp(1.5rem, 7vw, 3.5rem);
+  animation: victoryPop 0.6s ease-out;
 }
 
-.victory-layer p {
+.victory-quote {
   position: absolute;
-  top: 28vh;
+  top: 22vh;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
   color: #fff3cf;
   text-shadow: 0 2px 0 rgba(30, 17, 5, 0.42);
   font-weight: 900;
-  font-size: clamp(0.92rem, 3.1vw, 1.42rem);
+  font-size: clamp(1rem, 3.5vw, 1.6rem);
+  font-style: italic;
+  animation: fadeInUp 0.8s ease-out 0.3s both;
 }
 
-.victory-subtext {
-  position: absolute;
-  width: min(80vw, 520px);
-  left: 50%;
-  top: 34vh;
-  transform: translateX(-50%);
-}
-
+/* ============================================
+   CENSOR SLAM - POSITIONED LOWER
+   ============================================ */
 .censor-slam {
   position: absolute;
-  width: min(58vw, 420px);
+  width: min(62vw, 450px);
   left: 50%;
-  bottom: 23vh;
+  bottom: 15vh; /* Lower position for the joke */
   transform: translate(-50%, 130%) scale(0.72);
   opacity: 0;
+  z-index: 15;
+}
+
+.censor-slam.lower {
+  bottom: 12vh; /* Even lower */
 }
 
 .censor-slam.show {
-  animation: slam 620ms cubic-bezier(0.18, 1.08, 0.26, 1) forwards;
+  animation: slamLower 620ms cubic-bezier(0.18, 1.08, 0.26, 1) forwards;
 }
 
+/* ============================================
+   CONFETTI
+   ============================================ */
 .confetti {
   position: absolute;
   top: -10vh;
@@ -342,7 +629,43 @@ body,
   animation-iteration-count: infinite;
 }
 
-.launch-screen {
+/* ============================================
+   END SCREEN
+   ============================================ */
+.end-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: max(80px, calc(env(safe-area-inset-bottom) + 60px));
+  pointer-events: none;
+}
+
+.play-again-btn {
+  pointer-events: auto;
+  padding: 18px 40px;
+  border: 0;
+  border-radius: 30px;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffe470, #ffc95f);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  animation: buttonPulse 1.5s ease infinite;
+}
+
+.play-again-btn:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   TITLE SCREEN
+   ============================================ */
+.title-screen {
   position: absolute;
   inset: 0;
   z-index: 20;
@@ -361,87 +684,79 @@ body,
   opacity: 0.96;
 }
 
-.launch-panel {
+.title-panel {
+  position: relative;
+  width: min(88vw, 480px);
+  padding: 30px 24px;
+  border-radius: 24px;
+  background: rgba(255, 250, 234, 0.95);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.26);
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.title-panel h1 {
+  margin: 0 0 16px;
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  color: var(--ink);
+}
+
+.tap-hint {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #666;
+  animation: pulse 1.5s ease infinite;
+}
+
+.tap-hint.pulse {
+  font-size: 1.4rem;
+  color: var(--warm);
+}
+
+/* ============================================
+   HOW TO PLAY SCREEN
+   ============================================ */
+.howto-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.3), rgba(25, 22, 30, 0.6));
+}
+
+.howto-panel {
   position: relative;
   width: min(92vw, 540px);
-  border-radius: 20px;
-  padding: 16px;
-  text-align: center;
-  background: rgba(255, 250, 234, 0.92);
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(255, 250, 234, 0.96);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.26);
-}
-
-.launch-panel h1 {
-  margin: 0 0 10px;
-  font-size: clamp(1.3rem, 5.5vw, 2rem);
-}
-
-.install-button {
-  width: 100%;
-  border: 0;
-  border-radius: 14px;
-  padding: 0;
-  overflow: hidden;
-  background: #fffbe7;
-}
-
-.install-button img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.install-note,
-.install-message {
-  margin: 10px 0 0;
-  font-size: 0.89rem;
-  font-weight: 700;
-}
-
-.install-message {
-  color: #85440e;
-}
-
-.start-button {
-  margin-top: 14px;
-  width: 100%;
-  border: 0;
-  border-radius: 14px;
-  padding: 13px 10px;
-  font-size: 1rem;
-  font-weight: 900;
-  color: #1d1b27;
-  background: linear-gradient(180deg, #ffe470, #ffc95f);
-}
-
-/* How To Play Section */
-.how-to-play {
-  margin: 12px 0;
-  padding: 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.6);
-  text-align: left;
-}
-
-.how-to-play h2 {
-  margin: 0 0 10px;
-  font-size: 1.1rem;
   text-align: center;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.howto-panel h2 {
+  margin: 0 0 18px;
+  font-size: 1.6rem;
   color: var(--ink);
 }
 
 .instructions-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 18px;
   padding: 0;
+  text-align: left;
 }
 
 .instructions-list li {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  font-size: 0.95rem;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 1.05rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -450,23 +765,96 @@ body,
 }
 
 .lane-icon {
-  font-size: 1.3rem;
-  width: 28px;
+  font-size: 1.6rem;
+  width: 36px;
   text-align: center;
 }
 
 .goal-text {
-  margin: 12px 0 0;
-  padding: 8px;
-  border-radius: 8px;
+  margin: 0 0 18px;
+  padding: 12px;
+  border-radius: 12px;
   background: linear-gradient(90deg, var(--sun), #ffb347);
   font-weight: 800;
-  font-size: 0.9rem;
-  text-align: center;
+  font-size: 1rem;
   color: #3b1d11;
 }
 
-/* Debug Overlay */
+/* ============================================
+   READY SCREEN (Tap to Start)
+   ============================================ */
+.ready-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 230, 150, 0.4), rgba(25, 22, 30, 0.5));
+}
+
+.ready-panel {
+  position: relative;
+  text-align: center;
+  animation: readyPop 0.5s ease-out;
+}
+
+.ready-panel h1 {
+  margin: 0;
+  font-size: 6rem;
+  animation: cakeBounce 0.8s ease infinite;
+}
+
+.ready-panel h2 {
+  margin: 10px 0;
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   INTERSTITIAL SCREEN (between rounds)
+   ============================================ */
+.interstitial-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.3s ease;
+}
+
+.interstitial-panel {
+  position: relative;
+  width: min(88vw, 480px);
+  padding: 30px;
+  border-radius: 24px;
+  background: rgba(255, 250, 234, 0.96);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: interstitialPop 0.4s ease-out;
+}
+
+.round-complete {
+  margin: 0 0 10px;
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--success);
+}
+
+.interstitial-quote {
+  margin: 0 0 20px;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+/* ============================================
+   DEBUG OVERLAY
+   ============================================ */
 .debug-overlay {
   position: absolute;
   top: 70px;
@@ -474,25 +862,31 @@ body,
   z-index: 100;
   padding: 10px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
   color: #0f0;
-  font-family: monospace;
-  font-size: 0.72rem;
-  max-width: 180px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 0.68rem;
+  max-width: 200px;
   pointer-events: auto;
 }
 
 .debug-overlay .debug-content {
-  max-height: 200px;
+  max-height: 280px;
   overflow-y: auto;
 }
 
 .debug-overlay p {
-  margin: 3px 0;
+  margin: 2px 0;
 }
 
 .debug-overlay strong {
   color: #ff0;
+}
+
+.debug-overlay .debug-section {
+  color: #888;
+  margin-top: 6px;
+  font-size: 0.6rem;
 }
 
 .debug-overlay button {
@@ -515,281 +909,21 @@ body,
   top: 70px;
   right: 8px;
   z-index: 100;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.3);
-  font-size: 1rem;
+  font-size: 1.1rem;
   opacity: 0.5;
   pointer-events: auto;
-}
-
-@keyframes perfectPop {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.82);
-  }
-  42% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.06);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes sparklePop {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.2);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -160%) scale(1.5);
-  }
-}
-
-@keyframes slam {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 140%) scale(0.62);
-  }
-  72% {
-    opacity: 1;
-    transform: translate(-50%, -3%) scale(1.08);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-}
-
-@keyframes confettiFall {
-  0% {
-    transform: translateY(-12vh) rotate(0deg);
-  }
-  100% {
-    transform: translateY(120vh) rotate(560deg);
-  }
-}
-
-@keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  50% {
-    transform: translateX(5px);
-  }
-  75% {
-    transform: translateX(-4px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@media (min-width: 900px) {
-  .controls {
-    width: min(760px, 92vw);
-    margin-inline: auto;
-  }
+  cursor: pointer;
 }
 
 /* ============================================
-   PROFESSIONAL POLISH ADDITIONS
+   LOADING OVERLAY
    ============================================ */
-
-/* Font is imported at top of file */
-
-html, body, #root {
-  font-family: 'Nunito', 'Avenir Next', 'Trebuchet MS', sans-serif;
-}
-
-/* Permanent subtle vignette overlay */
-.vignette-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
-}
-
-/* Phase transition overlay */
-.phase-transition-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  background: rgba(255, 248, 230, 0.95);
-  animation: fadeOut 0.3s ease-out forwards;
-}
-
-.game-root.transitioning {
-  pointer-events: none;
-}
-
-/* Lane indicators at top of screen */
-.lane-indicators {
-  position: absolute;
-  top: 70px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  padding: 0 8%;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.lane-indicator {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  transition: all 0.15s ease;
-  opacity: 0.6;
-}
-
-.lane-indicator.active {
-  background: rgba(255, 230, 120, 0.9);
-  transform: scale(1.2);
-  opacity: 1;
-  box-shadow: 0 0 20px rgba(255, 220, 100, 0.8);
-}
-
-/* Hit particles */
-.hit-particle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 6;
-  transform: translate(-50%, -50%);
-}
-
-.hit-particle.success {
-  box-shadow: 0 0 8px rgba(255, 220, 100, 0.8);
-}
-
-.hit-particle.fail {
-  box-shadow: 0 0 8px rgba(255, 80, 80, 0.8);
-}
-
-/* Enhanced party meter */
-.party-meter {
-  position: relative;
-  transition: transform 0.1s ease;
-}
-
-.party-meter.beat-pulse {
-  box-shadow: 0 0 20px rgba(255, 200, 100, 0.6);
-}
-
-.party-meter.bump {
-  transform: scale(1.03);
-}
-
-.party-meter-fill {
-  position: relative;
-  overflow: hidden;
-}
-
-.meter-shimmer {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 2s infinite;
-}
-
-.combo-badge {
-  position: absolute;
-  right: -8px;
-  top: -8px;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 900;
-  padding: 3px 8px;
-  border-radius: 12px;
-  animation: comboPulse 0.5s ease infinite alternate;
-}
-
-/* Practice mode toggle */
-.practice-toggle {
-  margin: 12px 0;
-  text-align: center;
-}
-
-.practice-toggle label {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--ink);
-}
-
-.practice-toggle input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-slider {
-  position: relative;
-  width: 48px;
-  height: 26px;
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 26px;
-  transition: background 0.3s;
-}
-
-.toggle-slider::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.practice-toggle input:checked + .toggle-slider {
-  background: linear-gradient(90deg, var(--sun), var(--warm));
-}
-
-.practice-toggle input:checked + .toggle-slider::after {
-  transform: translateX(22px);
-}
-
-/* Loading screen */
 .loading-overlay {
   position: absolute;
   inset: 0;
@@ -833,85 +967,20 @@ html, body, #root {
   color: var(--ink);
 }
 
-.launch-screen.loaded .launch-panel {
-  animation: fadeInUp 0.4s ease-out;
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
 }
 
-/* Enhanced button styles */
-.controls button {
-  transition: all 0.1s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.controls button::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
-  pointer-events: none;
-}
-
-.controls button:active {
-  transform: translateY(2px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(15, 12, 20, 0.15);
-}
-
-.controls button:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 2px;
-}
-
-.start-button {
-  transition: all 0.15s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.start-button::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
-  pointer-events: none;
-}
-
-.start-button:active {
-  transform: scale(0.97);
-}
-
-.start-button:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 2px;
-}
-
-/* Enhanced debug overlay */
-.debug-overlay .debug-section {
-  color: #888;
-  margin-top: 8px;
-  font-size: 0.65rem;
-}
-
-.debug-overlay .in-window {
-  color: #0f0 !important;
-  font-weight: bold;
-}
-
-/* Keyframe animations */
-@keyframes shimmer {
-  0% { left: -100%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
-}
-
-@keyframes comboPulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
-}
-
-@keyframes loadingBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeInUp {
@@ -925,88 +994,216 @@ html, body, #root {
   }
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+@keyframes perfectPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+  42% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
-/* Full-height tap zones for better mobile input */
-.controls {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 12;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 0;
-  padding: 0;
-  pointer-events: none;
+@keyframes sparklePop {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -160%) scale(1.5);
+  }
 }
 
-.controls button {
-  pointer-events: auto;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  font-size: 0;
-  color: transparent;
-  background: transparent;
-  box-shadow: none;
-  opacity: 0;
-  transition: opacity 0.15s, background 0.15s;
+@keyframes slamLower {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 140%) scale(0.62);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(-50%, -8%) scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }
 
-.controls button.flash {
-  opacity: 1;
-  background: rgba(255, 230, 100, 0.25);
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-12vh) rotate(0deg);
+  }
+  100% {
+    transform: translateY(120vh) rotate(560deg);
+  }
 }
 
-.controls button:active {
-  opacity: 1;
-  background: rgba(255, 230, 100, 0.35);
-  transform: none;
+@keyframes shimmer {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
-/* Visible button labels at bottom */
-.controls::after {
-  content: '';
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: max(10px, env(safe-area-inset-bottom));
-  height: 50px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  pointer-events: none;
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
-/* Button label strip */
-.button-labels {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: max(10px, env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  z-index: 13;
-  pointer-events: none;
+@keyframes buttonPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
-.button-label {
-  padding: 13px 8px;
-  border-radius: 15px;
-  font-size: 0.84rem;
-  font-weight: 900;
-  color: var(--ink);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 242, 210, 0.9));
-  box-shadow: 0 5px 14px rgba(15, 12, 20, 0.2);
-  text-align: center;
+@keyframes loadingBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
-.button-label.flash {
-  background: linear-gradient(180deg, #fff6c7, #ffde78);
+@keyframes cheeseWobble {
+  0%, 100% { 
+    transform: translate(-50%, -50%) rotate(-8deg) scale(1);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotate(5deg) scale(1.05);
+  }
+  50% { 
+    transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotate(8deg) scale(1.03);
+  }
+}
+
+@keyframes teaSplash {
+  0%, 100% { 
+    transform: translate(-50%, -50%) rotate(0deg) translateY(0);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotate(-4deg) translateY(-3px);
+  }
+  50% { 
+    transform: translate(-50%, -50%) rotate(0deg) translateY(0);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotate(4deg) translateY(-2px);
+  }
+}
+
+@keyframes sharkSwimLeft {
+  0%, 100% { 
+    transform: translate(-50%, -50%) rotate(-3deg) scaleY(1);
+  }
+  50% { 
+    transform: translate(-50%, -50%) rotate(3deg) scaleY(0.95);
+  }
+}
+
+@keyframes sharkSwimRight {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scaleX(-1) rotate(-3deg) scaleY(1);
+  }
+  50% { 
+    transform: translate(-50%, -50%) scaleX(-1) rotate(3deg) scaleY(0.95);
+  }
+}
+
+@keyframes stripPulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.1); }
+}
+
+@keyframes flashText {
+  from { opacity: 1; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1); }
+  to { opacity: 0.8; text-shadow: 0 2px 10px rgba(255, 100, 100, 0.5); }
+}
+
+@keyframes flyOff {
+  0% {
+    transform: translate(-50%, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -200%) rotate(720deg) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes cakeBounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  50% { transform: scale(1) rotate(0deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+}
+
+@keyframes readyPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes interstitialPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes victoryPop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  60% {
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (min-width: 768px) {
+  .lane-indicator {
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+  }
+  
+  .falling-item {
+    width: min(18vw, 120px);
+  }
+  
+  .horizontal-shark {
+    width: min(20vw, 160px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .button-labels {
+    width: min(700px, 80vw);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
 }

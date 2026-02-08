@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-08T22:39:06.220Z",
+  "generatedAt": "2026-02-08T23:11:22.227Z",
   "sprites": [
     {
       "role": "dance_base",
@@ -186,23 +186,23 @@
     {
       "role": "hazard_shark_fin",
       "url": "/assets/sprites/items/hazard_shark_fin.png",
-      "sizeBytes": 37411,
-      "source": "assets_raw/hazard_shark_fin.png",
-      "reason": "Hazard lane object."
+      "sizeBytes": 1647346,
+      "source": "assets_raw/Shark.png",
+      "reason": "Horizontal swimming shark hazard."
     },
     {
       "role": "item_nana_cheese",
       "url": "/assets/sprites/items/item_nana_cheese.png",
-      "sizeBytes": 24684,
-      "source": "assets_raw/item_nana_cheese.png",
-      "reason": "Left lane good item."
+      "sizeBytes": 1509348,
+      "source": "assets_raw/Cheese.png",
+      "reason": "Left lane cheese item - auto-collected."
     },
     {
       "role": "item_unsweetened_iced_tea",
       "url": "/assets/sprites/items/item_unsweetened_iced_tea.png",
-      "sizeBytes": 4838,
-      "source": "assets_raw/item_unsweetened_iced_tea.png",
-      "reason": "Right lane good item."
+      "sizeBytes": 1554764,
+      "source": "assets_raw/Iced_Tea.png",
+      "reason": "Right lane iced tea item - auto-collected."
     },
     {
       "role": "overlay_party_hat",

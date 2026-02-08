@@ -1,67 +1,102 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 
-const PHASE_LAUNCH = "Phase0_Launch";
-const PHASE_RHYTHM = "Phase1_Rhythm";
-const PHASE_POPOFF = "Phase2_PopOff";
-const PHASE_VICTORY = "Phase3_Victory";
+// ============================================
+// PHASE CONSTANTS
+// ============================================
+const PHASE_TITLE = "Phase_Title";
+const PHASE_HOWTO = "Phase_HowTo";
+const PHASE_READY = "Phase_Ready";
+const PHASE_RHYTHM = "Phase_Rhythm";
+const PHASE_INTERSTITIAL = "Phase_Interstitial";
+const PHASE_STRIP = "Phase_Strip";
+const PHASE_VICTORY = "Phase_Victory";
+const PHASE_END = "Phase_End";
 
-const LANE_X = {
-  left: 22,
-  center: 50,
-  right: 78,
-};
-const PLAYER_X = {
-  left: 28,
-  center: 50,
-  right: 72,
-};
+// ============================================
+// GAME CONSTANTS
+// ============================================
+const LANE_X = { left: 22, center: 50, right: 78 };
+const PLAYER_X = { left: 28, center: 50, right: 72 };
 
-const SUCCESS_LINES = ["Birthday legend!", "Party animal!", "Hot stuff!"];
-const HAZARD_LINES = [
-  "We're gonna need a bigger cake.",
-  "Wrong party, buddy.",
-  "Shark dodged. Cake saved!",
+// Timing constants
+const BEAT_MS = 650;
+const MAX_DELTA_MS = 100;
+const HIT_REACTION_MS = 260;
+
+// Round configuration - each round gets faster
+const ROUND_CONFIG = [
+  { round: 1, fallMs: 2800, spawnMultiplier: 1.0, sharkSpeed: 45, duration: 25000 },
+  { round: 2, fallMs: 2400, spawnMultiplier: 1.15, sharkSpeed: 55, duration: 25000 },
+  { round: 3, fallMs: 2100, spawnMultiplier: 1.25, sharkSpeed: 65, duration: 30000 },
 ];
 
-const BEAT_MS = 650;
-const FALL_MS_NORMAL = 2500;
-const FALL_MS_PRACTICE = 3500;
-const HIT_WINDOW_MS = 430;
-const PERFECT_WINDOW_MS = 140;
-const HIT_REACTION_MS = 260;
-const POPOFF_TARGET_TAPS = 16;
-const MAX_DELTA_MS = 100; // Clamp delta to prevent huge jumps after tab switch
+// Jump mechanics
+const JUMP_DURATION_MS = 500;
+const JUMP_HEIGHT_VH = 18;
 
+// Strip phase thresholds (tap counts to remove each item)
+const STRIP_THRESHOLDS = [20, 45, 75];
+const STRIP_STAGES = ["hat", "sweater", "bowtie"];
+
+// Auto-collect zone (percentage from top where items are collected)
+const COLLECT_ZONE_TOP = 68;
+const COLLECT_ZONE_BOTTOM = 85;
+
+// Horizontal shark settings
+const SHARK_Y_POSITION = 75; // percentage from top where sharks swim
+
+// ============================================
+// RANDOM MOVIE QUOTES (Jaws + Full Monty parodies)
+// ============================================
+const INTERSTITIAL_QUOTES = [
+  "We're gonna need a bigger dance floor.",
+  "Just when you thought it was safe to eat cheese...",
+  "You've got some Cheddar on you.",
+  "This is a right good knees-up!",
+  "Smile, you son of a birthday boy!",
+  "The Full Weasel... it's all or nothing now.",
+  "Farewell and adieu to my sensible sweater...",
+  "Here's to swimmin' with bow-legged ferrets!",
+];
+
+// ============================================
+// FEEDBACK LINES
+// ============================================
+const SUCCESS_LINES = ["Birthday legend!", "Party animal!", "Hot stuff!", "Cheesy goodness!", "Refreshing!"];
+const DODGE_LINES = ["Nice jump!", "Shark dodged!", "Too slow, Jaws!", "Airborne!", "Smooth moves!"];
+const SHARK_HIT_LINES = [
+  "We're gonna need a bigger boat.",
+  "That one got ya!",
+  "Ouch! Shark attack!",
+];
+
+// ============================================
+// FALLBACK MANIFEST
+// ============================================
 const FALLBACK_MANIFEST = {
   sprites: [
     { role: "dance_clean_01", url: "/assets/sprites/dance/dexter_dance_01.png" },
     { role: "dance_clean_02", url: "/assets/sprites/dance/dexter_dance_02.png" },
     { role: "dance_clean_03", url: "/assets/sprites/dance/dexter_dance_03.png" },
     { role: "title_screen", url: "/assets/sprites/ui/Title_Screen.png" },
-    { role: "pwa_guide", url: "/assets/sprites/ui/PWA_guide.png" },
   ],
-  backgrounds: {
-    mp4: [],
-    pngFallback: [],
-  },
+  backgrounds: { mp4: [], pngFallback: [] },
   music: [],
 };
 
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const choice = (items) => items[Math.floor(Math.random() * items.length)];
 
 function makeIdFactory() {
   let nextId = 1;
-  return () => {
-    nextId += 1;
-    return nextId;
-  };
+  return () => nextId++;
 }
 
 function pickRandomIndex(length, exclude = -1) {
-  if (length <= 1) {
-    return 0;
-  }
+  if (length <= 1) return 0;
   let index = Math.floor(Math.random() * length);
   while (index === exclude) {
     index = Math.floor(Math.random() * length);
@@ -69,16 +104,22 @@ function pickRandomIndex(length, exclude = -1) {
   return index;
 }
 
+// ============================================
+// MAIN APP COMPONENT
+// ============================================
 function App() {
+  // ============================================
+  // REFS (mutable state for performance-critical game loop)
+  // ============================================
   const idRef = useRef(makeIdFactory());
-  const touchStartYRef = useRef(null);
   const nextBeatRef = useRef(0);
   const beatCountRef = useRef(0);
-  const deferredPromptRef = useRef(null);
   const manifestRef = useRef(FALLBACK_MANIFEST);
   const itemsRef = useRef([]);
+  const sharksRef = useRef([]);
   const clockRef = useRef(0);
-  const lastMatchRef = useRef(null);
+  const lastTickRef = useRef(performance.now());
+  const roundStartRef = useRef(0);
   const musicRef = useRef({
     players: null,
     activePlayer: "a",
@@ -90,50 +131,66 @@ function App() {
     context: null,
   });
 
+  // ============================================
+  // STATE
+  // ============================================
   const [manifest, setManifest] = useState(FALLBACK_MANIFEST);
-  const [phase, setPhase] = useState(PHASE_LAUNCH);
+  const [phase, setPhase] = useState(PHASE_TITLE);
   const [clockMs, setClockMs] = useState(0);
   const [partyMeter, setPartyMeter] = useState(0);
-  const [feedback, setFeedback] = useState("Welcome to The Full Weasel");
+  const [feedback, setFeedback] = useState("Welcome to The Full Weasel!");
   const [items, setItems] = useState([]);
-  const [perfectPops, setPerfectPops] = useState([]);
-  const [sparkles, setSparkles] = useState([]);
+  const [sharks, setSharks] = useState([]);
   const [hitReactionAt, setHitReactionAt] = useState(null);
   const [shakeUntil, setShakeUntil] = useState(0);
-  const [popoffTaps, setPopoffTaps] = useState(0);
+  const [playerLane, setPlayerLane] = useState("center");
+  const [playerX, setPlayerX] = useState(PLAYER_X.center);
+  const [perfectPops, setPerfectPops] = useState([]);
+  const [sparkles, setSparkles] = useState([]);
   const [confetti, setConfetti] = useState([]);
-  const [showSlam, setShowSlam] = useState(false);
   const [showOfflineMediaHint, setShowOfflineMediaHint] = useState(false);
   const [backgroundMode, setBackgroundMode] = useState("loading");
   const [activeVideo, setActiveVideo] = useState("");
   const [pngIndex, setPngIndex] = useState(0);
   const [pngPrevIndex, setPngPrevIndex] = useState(0);
-  const [playerLane, setPlayerLane] = useState("center");
-  const [playerX, setPlayerX] = useState(PLAYER_X.center);
-  const [laneFlashUntil, setLaneFlashUntil] = useState({
-    left: 0,
-    center: 0,
-    right: 0,
-  });
-  const [installAvailable, setInstallAvailable] = useState(false);
-  const [installMessage, setInstallMessage] = useState("");
-  const [showDebug, setShowDebug] = useState(false);
-  const [lastAction, setLastAction] = useState({ lane: null, time: 0, result: "none" });
-  const [practiceMode, setPracticeMode] = useState(false);
-  const [combo, setCombo] = useState(0);
-  const [maxCombo, setMaxCombo] = useState(0);
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [beatPulse, setBeatPulse] = useState(false);
   const [hitParticles, setHitParticles] = useState([]);
   const [meterBump, setMeterBump] = useState(false);
-  const [phaseTransition, setPhaseTransition] = useState(false);
+  const [beatPulse, setBeatPulse] = useState(false);
 
-  // Computed fall time based on practice mode
-  const FALL_MS = practiceMode ? FALL_MS_PRACTICE : FALL_MS_NORMAL;
+  // Round system state
+  const [currentRound, setCurrentRound] = useState(1);
+  const [interstitialQuote, setInterstitialQuote] = useState("");
 
+  // Jump state
+  const [isJumping, setIsJumping] = useState(false);
+  const [jumpStartTime, setJumpStartTime] = useState(0);
+
+  // Strip phase state
+  const [stripTapPower, setStripTapPower] = useState(0);
+  const [stripStage, setStripStage] = useState(0); // 0=clothed, 1=no hat, 2=no sweater, 3=no bowtie
+  const [stripZoom, setStripZoom] = useState(1.0);
+  const [costumeVisible, setCostumeVisible] = useState({ hat: true, sweater: true, bowtie: true });
+  const [flyingCostume, setFlyingCostume] = useState(null);
+
+  // Victory/End state
+  const [victoryZoom, setVictoryZoom] = useState(1.0);
+  const [showSlam, setShowSlam] = useState(false);
+  const [hatDropped, setHatDropped] = useState(false);
+  const [hatDropY, setHatDropY] = useState(-50);
+
+  // Debug state
+  const [showDebug, setShowDebug] = useState(false);
+  const [lastAction, setLastAction] = useState({ lane: null, time: 0, result: "none" });
+
+  // ============================================
+  // COMPUTED VALUES
+  // ============================================
+  const roundConfig = ROUND_CONFIG[currentRound - 1] || ROUND_CONFIG[0];
   const isShaking = clockMs < shakeUntil;
 
+  // Build role map from manifest
   const roleMap = useMemo(() => {
     const map = new Map();
     for (const entry of manifest.sprites || []) {
@@ -142,13 +199,14 @@ function App() {
     return map;
   }, [manifest]);
 
+  // Build sprite URLs object
   const sprite = useMemo(() => {
     const getRole = (role, fallback = "") => roleMap.get(role) || fallback;
     return {
       danceCleanFrames: [
-        getRole("dance_clean_01", getRole("dexter_dance_01", getRole("dexter_joyful"))),
-        getRole("dance_clean_02", getRole("dexter_dance_02", getRole("dexter_proud"))),
-        getRole("dance_clean_03", getRole("dexter_dance_03", getRole("dexter_joyful"))),
+        getRole("dance_clean_01", "/assets/sprites/dance/dexter_dance_01.png"),
+        getRole("dance_clean_02", "/assets/sprites/dance/dexter_dance_02.png"),
+        getRole("dance_clean_03", "/assets/sprites/dance/dexter_dance_03.png"),
       ].filter(Boolean),
       hitFrames: [
         getRole("hit_react_01", "/assets/sprites/hit/dex_hit_react_01.png"),
@@ -159,15 +217,10 @@ function App() {
       shadowBlob: getRole("shadow_blob", "/assets/sprites/ui/shadow_blob.png"),
       spotlight: getRole("spotlight_vignette", "/assets/sprites/ui/spotlight_vignette.png"),
       censorSlam: getRole("censor_slam", "/assets/sprites/ui/censor_slam.png"),
-      victorySubtext: getRole("victory_subtext", "/assets/sprites/ui/victory_subtext.png"),
       sharkFin: getRole("hazard_shark_fin", "/assets/sprites/items/hazard_shark_fin.png"),
       nanaCheese: getRole("item_nana_cheese", "/assets/sprites/items/item_nana_cheese.png"),
-      icedTea: getRole(
-        "item_unsweetened_iced_tea",
-        "/assets/sprites/items/item_unsweetened_iced_tea.png"
-      ),
+      icedTea: getRole("item_unsweetened_iced_tea", "/assets/sprites/items/item_unsweetened_iced_tea.png"),
       titleScreen: getRole("title_screen", ""),
-      pwaGuide: getRole("pwa_guide", ""),
     };
   }, [roleMap]);
 
@@ -180,18 +233,21 @@ function App() {
     [manifest]
   );
 
-  useEffect(() => {
-    manifestRef.current = manifest;
-  }, [manifest]);
+  // Calculate jump Y offset based on parabolic arc
+  const jumpProgress = isJumping ? clamp((clockMs - jumpStartTime) / JUMP_DURATION_MS, 0, 1) : 0;
+  const jumpY = isJumping ? Math.sin(jumpProgress * Math.PI) * JUMP_HEIGHT_VH : 0;
 
-  useEffect(() => {
-    itemsRef.current = items;
-  }, [items]);
+  // ============================================
+  // SYNC REFS WITH STATE (for synchronous access in event handlers)
+  // ============================================
+  useEffect(() => { manifestRef.current = manifest; }, [manifest]);
+  useEffect(() => { itemsRef.current = items; }, [items]);
+  useEffect(() => { sharksRef.current = sharks; }, [sharks]);
+  useEffect(() => { clockRef.current = clockMs; }, [clockMs]);
 
-  useEffect(() => {
-    clockRef.current = clockMs;
-  }, [clockMs]);
-
+  // ============================================
+  // PREVENT MOBILE GESTURES (zoom, refresh)
+  // ============================================
   useEffect(() => {
     const preventGesture = (event) => event.preventDefault();
     document.addEventListener("gesturestart", preventGesture, { passive: false });
@@ -202,46 +258,22 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const onBeforeInstallPrompt = (event) => {
-      event.preventDefault();
-      deferredPromptRef.current = event;
-      setInstallAvailable(true);
-      setInstallMessage("Install is ready. Tap the guide button.");
-    };
-
-    const onInstalled = () => {
-      deferredPromptRef.current = null;
-      setInstallAvailable(false);
-      setInstallMessage("Installed. You can launch from home screen.");
-    };
-
-    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
-    window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
-  }, []);
-
+  // ============================================
+  // LOAD MANIFEST AND PRELOAD ASSETS
+  // ============================================
   useEffect(() => {
     const loadManifest = async () => {
       try {
         setLoadingProgress(10);
         const response = await fetch("/assets/manifest.json", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("manifest fetch failed");
-        }
+        if (!response.ok) throw new Error("manifest fetch failed");
         setLoadingProgress(30);
         const data = await response.json();
         setManifest(data);
         setLoadingProgress(50);
-        
+
         // Preload critical sprites
-        const criticalImages = [
-          ...(data.sprites || []).slice(0, 6).map(s => s.url),
-        ].filter(Boolean);
-        
+        const criticalImages = (data.sprites || []).slice(0, 8).map((s) => s.url).filter(Boolean);
         let loaded = 0;
         await Promise.all(
           criticalImages.map(
@@ -257,74 +289,52 @@ function App() {
               })
           )
         );
-        
+
         setLoadingProgress(100);
         setTimeout(() => setAssetsLoaded(true), 300);
       } catch {
-        // Fallback manifest keeps app functional.
-        setAssetsLoaded(true);
+        setAssetsLoaded(true); // Continue with fallback
       }
     };
     loadManifest();
   }, []);
 
+  // ============================================
+  // DEBUG WINDOW HOOKS
+  // ============================================
   useEffect(() => {
     window.advanceTime = (ms) => {
       const stepMs = Number(ms);
-      if (!Number.isFinite(stepMs) || stepMs <= 0) {
-        return;
-      }
+      if (!Number.isFinite(stepMs) || stepMs <= 0) return;
       setClockMs((current) => current + stepMs);
     };
+    window.render_game_to_text = () => JSON.stringify({
+      phase, clockMs, currentRound, partyMeter,
+      playerLane, isJumping, jumpY,
+      items: items.length, sharks: sharks.length,
+      stripTapPower, stripStage, stripZoom,
+      victoryZoom, hatDropped, feedback,
+    });
     return () => {
       delete window.advanceTime;
-    };
-  }, []);
-
-  useEffect(() => {
-    window.render_game_to_text = () => {
-      const payload = {
-        phase,
-        clockMs,
-        controls: ["tap-left", "tap-right", "tap-center", "swipe-up"],
-        coordinateSystem:
-          "x/y are percentages in screen space, origin top-left, +x right, +y down",
-        player: {
-          lane: playerLane,
-          x: playerX,
-        },
-        partyMeter,
-        popoff: {
-          taps: popoffTaps,
-          target: POPOFF_TARGET_TAPS,
-        },
-        activeItems: items.map((item) => {
-          const progress = (clockMs - item.spawnMs) / FALL_MS;
-          return {
-            id: item.id,
-            kind: item.kind,
-            lane: item.lane,
-            x: LANE_X[item.lane],
-            y: Math.round((-15 + progress * 102) * 100) / 100,
-          };
-        }),
-        feedback,
-      };
-      return JSON.stringify(payload);
-    };
-    return () => {
       delete window.render_game_to_text;
     };
-  }, [phase, clockMs, partyMeter, popoffTaps, items, feedback, playerLane, playerX]);
+  }, [phase, clockMs, currentRound, partyMeter, playerLane, isJumping, jumpY, items.length, sharks.length, stripTapPower, stripStage, stripZoom, victoryZoom, hatDropped, feedback]);
 
+  // ============================================
+  // PLAYER LANE → X POSITION
+  // ============================================
   useEffect(() => {
     setPlayerX(PLAYER_X[playerLane] ?? PLAYER_X.center);
   }, [playerLane]);
 
-  // Clamped delta time game loop to prevent huge jumps after tab switch
-  const lastTickRef = useRef(performance.now());
+  // ============================================
+  // GAME LOOP (fixed timestep via setInterval)
+  // ============================================
   useEffect(() => {
-    if (phase === PHASE_LAUNCH) {
+    // Only run game loop during active phases
+    if (phase === PHASE_TITLE || phase === PHASE_HOWTO || phase === PHASE_READY || 
+        phase === PHASE_INTERSTITIAL || phase === PHASE_END) {
       return;
     }
     const tick = () => {
@@ -333,14 +343,24 @@ function App() {
       lastTickRef.current = now;
       setClockMs((current) => current + delta);
     };
-    const timer = window.setInterval(tick, 33);
+    const timer = window.setInterval(tick, 16); // ~60fps
     return () => window.clearInterval(timer);
   }, [phase]);
 
-  // Beat pulse effect
+  // ============================================
+  // JUMP COMPLETION CHECK
+  // ============================================
+  useEffect(() => {
+    if (isJumping && jumpProgress >= 1) {
+      setIsJumping(false);
+    }
+  }, [isJumping, jumpProgress]);
+
+  // ============================================
+  // BEAT PULSE VISUAL EFFECT
+  // ============================================
   useEffect(() => {
     if (phase !== PHASE_RHYTHM) return;
-    const beatNumber = Math.floor(clockMs / BEAT_MS);
     const beatProgress = (clockMs % BEAT_MS) / BEAT_MS;
     if (beatProgress < 0.1) {
       setBeatPulse(true);
@@ -349,116 +369,308 @@ function App() {
     }
   }, [clockMs, phase]);
 
-  // Clean up hit particles
+  // ============================================
+  // CLEANUP VISUAL EFFECTS
+  // ============================================
   useEffect(() => {
+    setPerfectPops((current) => current.filter((entry) => clockMs - entry.spawnedAt < 360));
+    setSparkles((current) => current.filter((entry) => clockMs - entry.spawnedAt < 900));
     setHitParticles((current) => current.filter((p) => clockMs - p.spawnedAt < 500));
   }, [clockMs]);
 
   useEffect(() => {
-    if (phase !== PHASE_RHYTHM) {
-      return;
+    if (hitReactionAt !== null && clockMs - hitReactionAt > HIT_REACTION_MS) {
+      setHitReactionAt(null);
     }
+  }, [clockMs, hitReactionAt]);
+
+  // ============================================
+  // ITEM SPAWNING (RHYTHM PHASE)
+  // Alternates between cheese (left) and tea (right)
+  // ============================================
+  useEffect(() => {
+    if (phase !== PHASE_RHYTHM) return;
 
     while (clockMs >= nextBeatRef.current) {
       const beat = beatCountRef.current;
       const spawnMs = nextBeatRef.current;
       const goodLane = beat % 2 === 0 ? "left" : "right";
       const goodSubtype = goodLane === "left" ? "cheese" : "tea";
-      const spawned = [
-        {
-          id: idRef.current(),
-          kind: "good",
-          subtype: goodSubtype,
-          lane: goodLane,
-          spawnMs,
-          resolved: false,
-        },
-      ];
 
-      if (beat % 3 === 2) {
-        spawned.push({
-          id: idRef.current(),
-          kind: "hazard",
-          lane: ["left", "center", "right"][Math.floor(Math.random() * 3)],
-          spawnMs,
-          resolved: false,
-        });
-      }
+      const spawned = [{
+        id: idRef.current(),
+        kind: "good",
+        subtype: goodSubtype,
+        lane: goodLane,
+        spawnMs,
+        resolved: false,
+      }];
 
       setItems((current) => [...current, ...spawned]);
       beatCountRef.current += 1;
-      nextBeatRef.current += BEAT_MS;
+      nextBeatRef.current += BEAT_MS / roundConfig.spawnMultiplier;
     }
-  }, [clockMs, phase]);
+  }, [clockMs, phase, roundConfig.spawnMultiplier]);
 
+  // ============================================
+  // SHARK SPAWNING (HORIZONTAL)
+  // Sharks swim across at Dexter's height
+  // ============================================
   useEffect(() => {
-    if (phase !== PHASE_RHYTHM) {
-      return;
-    }
+    if (phase !== PHASE_RHYTHM) return;
 
-    let missedGood = false;
-    let hazardHit = false;
+    // Spawn shark every ~3 seconds, adjusted by round
+    const sharkInterval = 3000 / roundConfig.spawnMultiplier;
+    const currentInterval = Math.floor(clockMs / sharkInterval);
+    const prevInterval = Math.floor((clockMs - 33) / sharkInterval);
+    const shouldSpawn = currentInterval > prevInterval;
+
+    if (shouldSpawn && sharks.length < 2) {
+      const fromLeft = Math.random() > 0.5;
+      setSharks((current) => [
+        ...current,
+        {
+          id: idRef.current(),
+          spawnMs: clockMs,
+          fromLeft,
+          y: SHARK_Y_POSITION,
+          resolved: false,
+        },
+      ]);
+    }
+  }, [clockMs, phase, sharks.length, roundConfig.spawnMultiplier]);
+
+  // ============================================
+  // AUTO-COLLECT LOGIC
+  // Items automatically collected when Dexter is in the same lane
+  // ============================================
+  useEffect(() => {
+    if (phase !== PHASE_RHYTHM) return;
 
     setItems((current) => {
-      const kept = [];
-      for (const item of current) {
-        const progress = (clockMs - item.spawnMs) / FALL_MS;
-        if (item.resolved) {
-          if (progress < 1.28) {
-            kept.push(item);
-          }
-          continue;
+      let collected = false;
+      let collectedItem = null;
+
+      const updated = current.map((item) => {
+        if (item.resolved || item.kind !== "good") return item;
+
+        const progress = (clockMs - item.spawnMs) / roundConfig.fallMs;
+        const y = -15 + progress * 102;
+
+        // Check if item is in collection zone AND player is in same lane
+        if (y >= COLLECT_ZONE_TOP && y <= COLLECT_ZONE_BOTTOM && item.lane === playerLane) {
+          collected = true;
+          collectedItem = { ...item };
+          return { ...item, resolved: true, resolvedAt: clockMs };
         }
-        if (progress > 1.08) {
-          if (item.kind === "good") {
-            missedGood = true;
-          } else {
-            hazardHit = true;
-          }
-          continue;
-        }
-        kept.push(item);
+        return item;
+      });
+
+      // Trigger collection effects (use setTimeout to avoid setState during render)
+      if (collected && collectedItem) {
+        setTimeout(() => {
+          setPartyMeter((v) => clamp(v + 8, 0, 100));
+          setFeedback(choice(SUCCESS_LINES));
+          setLastAction({ lane: collectedItem.lane, time: clockMs, result: "collect" });
+          triggerMeterBump();
+          spawnHitParticles(LANE_X[collectedItem.lane], true);
+          vibrate(40);
+        }, 0);
       }
-      return kept;
+
+      return updated;
     });
+  }, [clockMs, phase, playerLane, roundConfig.fallMs]);
 
-    if (missedGood) {
-      setFeedback("Keep the groove going!");
-    }
-    if (hazardHit) {
-      setFeedback(choice(HAZARD_LINES));
-      setPartyMeter((value) => clamp(value - 7, 0, 100));
-      setHitReactionAt(clockMs);
-      setShakeUntil(clockMs + HIT_REACTION_MS);
-    }
-  }, [clockMs, phase]);
-
+  // ============================================
+  // SHARK COLLISION DETECTION
+  // Hit detection for horizontal sharks vs jumping player
+  // ============================================
   useEffect(() => {
-    if (hitReactionAt === null) {
-      return;
-    }
-    if (clockMs - hitReactionAt > HIT_REACTION_MS) {
-      setHitReactionAt(null);
-    }
-  }, [clockMs, hitReactionAt]);
+    if (phase !== PHASE_RHYTHM) return;
 
-  useEffect(() => {
-    setPerfectPops((current) => current.filter((entry) => clockMs - entry.spawnedAt < 360));
-    setSparkles((current) => current.filter((entry) => clockMs - entry.spawnedAt < 900));
-  }, [clockMs]);
+    setSharks((current) => {
+      let sharkHit = false;
+      let sharkDodged = false;
 
+      const updated = current.map((shark) => {
+        if (shark.resolved) return shark;
+
+        const elapsed = clockMs - shark.spawnMs;
+        const travelTime = 2500 / (roundConfig.sharkSpeed / 45);
+        const progress = elapsed / travelTime;
+
+        // Shark X position: travels from -10 to 110 or vice versa
+        const sharkX = shark.fromLeft ? progress * 120 - 10 : 110 - progress * 120;
+
+        // Remove shark if off screen
+        if (sharkX < -20 || sharkX > 120) {
+          return { ...shark, resolved: true };
+        }
+
+        // Check collision with Dexter (center of screen ±18% range)
+        const dexterCenterX = playerX;
+        const hitRange = 18;
+        const inHitZone = Math.abs(sharkX - dexterCenterX) < hitRange;
+
+        if (inHitZone && !shark.resolved) {
+          if (isJumping) {
+            // Successful dodge!
+            sharkDodged = true;
+            return { ...shark, resolved: true };
+          } else {
+            // Hit by shark
+            sharkHit = true;
+            return { ...shark, resolved: true };
+          }
+        }
+
+        return shark;
+      });
+
+      // Apply dodge effects
+      if (sharkDodged) {
+        setTimeout(() => {
+          setPartyMeter((v) => clamp(v + 5, 0, 100));
+          setFeedback(choice(DODGE_LINES));
+          setLastAction({ lane: "jump", time: clockMs, result: "dodge" });
+          triggerMeterBump();
+          vibrate(30);
+        }, 0);
+      }
+
+      // Apply hit effects
+      if (sharkHit) {
+        setTimeout(() => {
+          setFeedback(choice(SHARK_HIT_LINES));
+          setPartyMeter((v) => clamp(v - 5, 0, 100));
+          setHitReactionAt(clockMs);
+          setShakeUntil(clockMs + HIT_REACTION_MS);
+          setLastAction({ lane: "hit", time: clockMs, result: "sharkHit" });
+          vibrate([100, 50, 100]);
+        }, 0);
+      }
+
+      // Keep resolved sharks briefly for visual fade
+      return updated.filter((s) => !s.resolved || clockMs - s.spawnMs < 500);
+    });
+  }, [clockMs, phase, playerX, isJumping, roundConfig.sharkSpeed]);
+
+  // ============================================
+  // ITEM CLEANUP (remove missed items)
+  // ============================================
   useEffect(() => {
-    if (phase === PHASE_RHYTHM && partyMeter >= 100) {
-      setPhase(PHASE_POPOFF);
+    if (phase !== PHASE_RHYTHM) return;
+
+    setItems((current) => {
+      return current.filter((item) => {
+        const progress = (clockMs - item.spawnMs) / roundConfig.fallMs;
+        if (item.resolved) {
+          return progress < 1.3; // Keep briefly for visual
+        }
+        if (progress > 1.1) {
+          // Missed item
+          if (item.kind === "good") {
+            setFeedback("Missed! Stay in lane!");
+          }
+          return false;
+        }
+        return true;
+      });
+    });
+  }, [clockMs, phase, roundConfig.fallMs]);
+
+  // ============================================
+  // ROUND PROGRESSION
+  // Check for round completion or party meter full
+  // ============================================
+  useEffect(() => {
+    if (phase !== PHASE_RHYTHM) return;
+
+    const elapsed = clockMs - roundStartRef.current;
+
+    // Check if party meter is full -> go to strip phase
+    if (partyMeter >= 100) {
+      setPhase(PHASE_STRIP);
       setItems([]);
+      setSharks([]);
       setFeedback("THIS IS THE BEST BIRTHDAY EVER!");
-    }
-  }, [partyMeter, phase]);
-
-  useEffect(() => {
-    if (phase !== PHASE_VICTORY) {
       return;
     }
+
+    // Check if round time elapsed
+    if (elapsed >= roundConfig.duration) {
+      if (currentRound < 3) {
+        // Show interstitial quote between rounds
+        setInterstitialQuote(choice(INTERSTITIAL_QUOTES));
+        setPhase(PHASE_INTERSTITIAL);
+      } else {
+        // After round 3, if meter is at least 80%, trigger strip phase
+        if (partyMeter >= 80) {
+          setPartyMeter(100);
+          setPhase(PHASE_STRIP);
+          setItems([]);
+          setSharks([]);
+          setFeedback("THIS IS THE BEST BIRTHDAY EVER!");
+        }
+        // Otherwise keep playing until 100%
+      }
+    }
+  }, [clockMs, phase, partyMeter, currentRound, roundConfig.duration]);
+
+  // ============================================
+  // STRIP PHASE ZOOM PROGRESSION
+  // Zoom increases with tap power and strip stage
+  // ============================================
+  useEffect(() => {
+    if (phase !== PHASE_STRIP) return;
+
+    // Base zoom increases with tap power
+    const baseZoom = 1.05 + (stripTapPower / 100) * 0.3;
+    // Additional zoom per stage
+    const stageZoom = stripStage * 0.12;
+    
+    setStripZoom(clamp(baseZoom + stageZoom, 1.0, 1.6));
+  }, [phase, stripTapPower, stripStage]);
+
+  // ============================================
+  // STRIP PHASE THRESHOLD CHECK
+  // Remove costume pieces at tap thresholds
+  // ============================================
+  useEffect(() => {
+    if (phase !== PHASE_STRIP) return;
+
+    for (let i = 0; i < STRIP_THRESHOLDS.length; i++) {
+      if (stripTapPower >= STRIP_THRESHOLDS[i] && stripStage === i) {
+        const costume = STRIP_STAGES[i];
+        setFlyingCostume(costume);
+        setCostumeVisible((prev) => ({ ...prev, [costume]: false }));
+        setStripStage(i + 1);
+        vibrate([50, 30, 50]);
+
+        // Clear flying costume after animation
+        setTimeout(() => setFlyingCostume(null), 800);
+
+        // After final stage (bowtie), go to victory
+        if (i === STRIP_THRESHOLDS.length - 1) {
+          setTimeout(() => {
+            setPhase(PHASE_VICTORY);
+            setFeedback("HAPPY BIRTHDAY!");
+          }, 600);
+        }
+        break;
+      }
+    }
+  }, [phase, stripTapPower, stripStage]);
+
+  // ============================================
+  // VICTORY PHASE SETUP
+  // Confetti, zoom, censor slam, hat drop
+  // ============================================
+  useEffect(() => {
+    if (phase !== PHASE_VICTORY) return;
+
+    // Generate confetti particles
     const generated = Array.from({ length: 72 }).map((_, index) => ({
       id: index,
       left: Math.random() * 100,
@@ -468,9 +680,44 @@ function App() {
       hue: Math.round(Math.random() * 360),
     }));
     setConfetti(generated);
-    setShowSlam(true);
+
+    // Zoom in for dramatic effect
+    setVictoryZoom(1.35);
+    
+    // Show censor slam after brief delay
+    setTimeout(() => setShowSlam(true), 400);
+
+    // After censor slam, drop the birthday hat and transition to end
+    setTimeout(() => {
+      setHatDropped(true);
+      // Animate hat falling with bounce
+      let hatY = -50;
+      let velocity = 0;
+      const gravity = 2;
+      const hatInterval = setInterval(() => {
+        velocity += gravity;
+        hatY += velocity;
+        
+        // Bounce when hitting target position
+        if (hatY >= 25) {
+          hatY = 25;
+          velocity = -velocity * 0.4; // Bounce with damping
+          if (Math.abs(velocity) < 2) {
+            clearInterval(hatInterval);
+            setHatDropY(25);
+            // Transition to end screen after hat settles
+            setTimeout(() => setPhase(PHASE_END), 1500);
+            return;
+          }
+        }
+        setHatDropY(hatY);
+      }, 30);
+    }, 2000);
   }, [phase]);
 
+  // ============================================
+  // BACKGROUND VIDEO/PNG HANDLING
+  // ============================================
   useEffect(() => {
     let cancelled = false;
 
@@ -478,36 +725,13 @@ function App() {
       new Promise((resolve) => {
         const video = document.createElement("video");
         let done = false;
-        const finish = (ok) => {
-          if (done) {
-            return;
-          }
-          done = true;
-          resolve(ok);
-        };
+        const finish = (ok) => { if (!done) { done = true; resolve(ok); } };
         const timeout = window.setTimeout(() => finish(false), 2600);
-        const cleanup = () => {
-          window.clearTimeout(timeout);
-          video.removeAttribute("src");
-          video.load();
-        };
-
         video.muted = true;
         video.playsInline = true;
-        video.loop = true;
         video.preload = "metadata";
-        video.addEventListener("canplaythrough", () => {
-          cleanup();
-          finish(true);
-        });
-        video.addEventListener("loadeddata", () => {
-          cleanup();
-          finish(true);
-        });
-        video.addEventListener("error", () => {
-          cleanup();
-          finish(false);
-        });
+        video.addEventListener("canplaythrough", () => { clearTimeout(timeout); finish(true); });
+        video.addEventListener("error", () => { clearTimeout(timeout); finish(false); });
         video.src = url;
         video.load();
       });
@@ -517,15 +741,10 @@ function App() {
         setBackgroundMode("png");
         return;
       }
-      const order = [...backgroundVideos];
-      while (order.length > 0) {
-        const index = Math.floor(Math.random() * order.length);
-        const url = order.splice(index, 1)[0];
+      for (const url of backgroundVideos) {
         // eslint-disable-next-line no-await-in-loop
         const ok = await probeVideo(url);
-        if (cancelled) {
-          return;
-        }
+        if (cancelled) return;
         if (ok) {
           setActiveVideo(url);
           setBackgroundMode("video");
@@ -537,16 +756,11 @@ function App() {
 
     setBackgroundMode("loading");
     chooseBackground();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [backgroundVideos]);
 
   useEffect(() => {
-    if (backgroundMode !== "png" || fallbackPngs.length === 0) {
-      return;
-    }
+    if (backgroundMode !== "png" || fallbackPngs.length === 0) return;
     const timer = window.setInterval(() => {
       setPngIndex((current) => {
         setPngPrevIndex(current);
@@ -567,10 +781,11 @@ function App() {
     };
   }, []);
 
+  // ============================================
+  // MUSIC HANDLING
+  // ============================================
   const initializeAudioPlayers = () => {
-    if (musicRef.current.players) {
-      return musicRef.current.players;
-    }
+    if (musicRef.current.players) return musicRef.current.players;
     const a = new Audio();
     const b = new Audio();
     a.preload = "auto";
@@ -585,221 +800,40 @@ function App() {
     return musicRef.current.players;
   };
 
-  const queueNextTrack = () => {
+  const startMusicIfNeeded = useCallback(async () => {
     const state = musicRef.current;
+    if (state.started) return;
     const tracks = (manifestRef.current.music || []).map((track) => track.url);
-    if (!state.players || tracks.length === 0) {
-      return;
-    }
-    const nextIndex = pickRandomIndex(tracks.length, state.currentIndex);
-    state.nextIndex = nextIndex;
-    const inactive = state.activePlayer === "a" ? state.players.b : state.players.a;
-    inactive.src = tracks[nextIndex];
-    inactive.preload = "auto";
-    inactive.load();
-  };
-
-  const attachMusicEvents = () => {
-    const state = musicRef.current;
-    if (!state.players) {
-      return;
-    }
-    for (const [key, player] of Object.entries(state.players)) {
-      player.onended = () => {
-        if (musicRef.current.activePlayer === key) {
-          startTransitionToNextTrack();
-        }
-      };
-      player.ontimeupdate = () => {
-        const live = musicRef.current;
-        if (!live.crossfadeEnabled || live.transitioning || live.activePlayer !== key) {
-          return;
-        }
-        if (!Number.isFinite(player.duration)) {
-          return;
-        }
-        const remaining = player.duration - player.currentTime;
-        if (remaining < 1.1) {
-          startTransitionToNextTrack();
-        }
-      };
-    }
-    queueNextTrack();
-  };
-
-  const startTransitionToNextTrack = () => {
-    const state = musicRef.current;
-    const tracks = (manifestRef.current.music || []).map((track) => track.url);
-    if (!state.players || state.transitioning || tracks.length === 0) {
-      return;
-    }
-    state.transitioning = true;
-
-    const active = state.activePlayer === "a" ? state.players.a : state.players.b;
-    const inactive = state.activePlayer === "a" ? state.players.b : state.players.a;
-    const nextIndex =
-      state.nextIndex >= 0
-        ? state.nextIndex
-        : pickRandomIndex(tracks.length, state.currentIndex);
-
-    inactive.src = tracks[nextIndex];
-    inactive.currentTime = 0;
-    inactive.preload = "auto";
-
-    const finalize = () => {
-      active.pause();
-      active.currentTime = 0;
-      active.volume = 1;
-      state.activePlayer = state.activePlayer === "a" ? "b" : "a";
-      state.currentIndex = nextIndex;
-      state.transitioning = false;
-      attachMusicEvents();
-    };
-
-    const cleanSwitch = async () => {
-      try {
-        await inactive.play();
-      } catch {
-        setShowOfflineMediaHint(!navigator.onLine);
-      }
-      finalize();
-    };
-
-    const crossfade = async () => {
-      inactive.volume = 0;
-      try {
-        await inactive.play();
-      } catch {
-        state.transitioning = false;
-        return;
-      }
-      const start = performance.now();
-      const duration = 850;
-      const tick = () => {
-        const t = clamp((performance.now() - start) / duration, 0, 1);
-        active.volume = 1 - t;
-        inactive.volume = t;
-        if (t < 1) {
-          requestAnimationFrame(tick);
-          return;
-        }
-        finalize();
-      };
-      requestAnimationFrame(tick);
-    };
-
-    if (state.crossfadeEnabled) {
-      void crossfade();
-    } else {
-      void cleanSwitch();
-    }
-  };
-
-  const startMusicIfNeeded = async () => {
-    const state = musicRef.current;
-    if (state.started) {
-      return;
-    }
-    const tracks = (manifestRef.current.music || []).map((track) => track.url);
-    if (tracks.length === 0) {
-      return;
-    }
+    if (tracks.length === 0) return;
 
     const players = initializeAudioPlayers();
     state.started = true;
     state.activePlayer = "a";
     state.currentIndex = pickRandomIndex(tracks.length);
 
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        state.context = new AudioCtx();
-        await state.context.resume();
-        state.crossfadeEnabled = state.context.state === "running";
-      }
-    } catch {
-      state.crossfadeEnabled = false;
-    }
-
     const active = players.a;
     active.src = tracks[state.currentIndex];
-    active.preload = "auto";
     active.currentTime = 0;
     try {
       await active.play();
-      attachMusicEvents();
     } catch {
       state.started = false;
       setShowOfflineMediaHint(!navigator.onLine);
     }
-  };
+  }, []);
 
-  const flashLane = (lane) => {
-    setLaneFlashUntil((current) => ({ ...current, [lane]: clockMs + 180 }));
-  };
-
-  const spawnPerfect = () => {
-    setPerfectPops((current) => [...current, { id: idRef.current(), spawnedAt: clockMs }]);
-  };
-
-  const spawnSparkle = () => {
-    setSparkles((current) => [
-      ...current,
-      {
-        id: idRef.current(),
-        spawnedAt: clockMs,
-        left: 32 + Math.random() * 36,
-        top: 35 + Math.random() * 25,
-      },
-    ]);
-  };
-
-  const startGame = () => {
-    // Phase transition animation
-    setPhaseTransition(true);
-    setTimeout(() => {
-      setClockMs(0);
-      setPartyMeter(0);
-      setItems([]);
-      setPopoffTaps(0);
-      setConfetti([]);
-      setShowSlam(false);
-      setPlayerLane("center");
-      setPlayerX(PLAYER_X.center);
-      setCombo(0);
-      setMaxCombo(0);
-      setHitParticles([]);
-      beatCountRef.current = 0;
-      nextBeatRef.current = 0;
-      lastTickRef.current = performance.now();
-      setFeedback(practiceMode ? "Practice Mode - Slower speed!" : "Tap left and right on beat!");
-      setPhase(PHASE_RHYTHM);
-      setPhaseTransition(false);
-      void startMusicIfNeeded();
-    }, 300);
-  };
-
-  const runPopoffTap = () => {
-    spawnSparkle();
-    setPopoffTaps((count) => {
-      const next = count + 1;
-      if (next >= POPOFF_TARGET_TAPS) {
-        setFeedback("HAPPY BIRTHDAY NANA CHEESE");
-        setPhase(PHASE_VICTORY);
-        return POPOFF_TARGET_TAPS;
-      }
-      return next;
-    });
-  };
-
-  // Haptic feedback helper
+  // ============================================
+  // HELPER FUNCTIONS
+  // ============================================
   const vibrate = (pattern) => {
-    if (navigator.vibrate) {
-      navigator.vibrate(pattern);
-    }
+    if (navigator.vibrate) navigator.vibrate(pattern);
   };
 
-  // Spawn hit particle burst
+  const triggerMeterBump = () => {
+    setMeterBump(true);
+    setTimeout(() => setMeterBump(false), 200);
+  };
+
   const spawnHitParticles = (x, success) => {
     const particles = Array.from({ length: success ? 8 : 4 }).map(() => ({
       id: idRef.current(),
@@ -814,214 +848,205 @@ function App() {
     setHitParticles((current) => [...current, ...particles]);
   };
 
-  // Bump meter animation
-  const triggerMeterBump = () => {
-    setMeterBump(true);
-    setTimeout(() => setMeterBump(false), 200);
-  };
+  const spawnSparkle = useCallback(() => {
+    setSparkles((current) => [
+      ...current,
+      {
+        id: idRef.current(),
+        spawnedAt: clockRef.current,
+        left: 32 + Math.random() * 36,
+        top: 35 + Math.random() * 25,
+      },
+    ]);
+  }, []);
 
-  const performRhythmAction = (lane, source = "tap") => {
-    // Read items synchronously from ref to avoid async setState closure issues
-    const currentItems = itemsRef.current;
-    const currentClock = clockRef.current;
-    let bestIndex = -1;
-    let bestDistance = Number.POSITIVE_INFINITY;
-    let selected = null;
+  // ============================================
+  // GAME FLOW FUNCTIONS
+  // ============================================
+  const goToHowTo = useCallback(() => {
+    setPhase(PHASE_HOWTO);
+  }, []);
 
-    for (let i = 0; i < currentItems.length; i += 1) {
-      const item = currentItems[i];
-      if (item.resolved) {
-        continue;
-      }
-      const hitTime = item.spawnMs + FALL_MS;
-      const distance = Math.abs(hitTime - currentClock);
-      if (distance > HIT_WINDOW_MS) {
-        continue;
-      }
+  const goToReady = useCallback(() => {
+    setPhase(PHASE_READY);
+  }, []);
 
-      let matches = false;
-      if (item.kind === "good") {
-        matches = item.lane === lane;
-      } else {
-        matches = lane === "center" || source === "swipe";
-      }
+  const startGame = useCallback(() => {
+    setClockMs(0);
+    setPartyMeter(0);
+    setItems([]);
+    setSharks([]);
+    setConfetti([]);
+    setShowSlam(false);
+    setHatDropped(false);
+    setHatDropY(-50);
+    setPlayerLane("center");
+    setPlayerX(PLAYER_X.center);
+    setIsJumping(false);
+    setJumpStartTime(0);
+    setCurrentRound(1);
+    setStripTapPower(0);
+    setStripStage(0);
+    setStripZoom(1.0);
+    setVictoryZoom(1.0);
+    setCostumeVisible({ hat: true, sweater: true, bowtie: true });
+    setFlyingCostume(null);
+    setHitParticles([]);
+    setLastAction({ lane: null, time: 0, result: "none" });
+    beatCountRef.current = 0;
+    nextBeatRef.current = 0;
+    roundStartRef.current = 0;
+    lastTickRef.current = performance.now();
+    setFeedback("Tap LEFT or RIGHT to move!");
+    setPhase(PHASE_RHYTHM);
+    void startMusicIfNeeded();
+  }, [startMusicIfNeeded]);
 
-      if (!matches) {
-        continue;
-      }
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        bestIndex = i;
-        selected = item;
-      }
+  const startNextRound = useCallback(() => {
+    const nextRound = currentRound + 1;
+    setCurrentRound(nextRound);
+    roundStartRef.current = clockRef.current;
+    setItems([]);
+    setSharks([]);
+    beatCountRef.current = 0;
+    nextBeatRef.current = clockRef.current;
+    setFeedback(`Round ${nextRound} - Faster!`);
+    setPhase(PHASE_RHYTHM);
+  }, [currentRound]);
+
+  const resetGame = useCallback(() => {
+    // Full state reset
+    setPhase(PHASE_TITLE);
+    setClockMs(0);
+    setPartyMeter(0);
+    setItems([]);
+    setSharks([]);
+    setConfetti([]);
+    setShowSlam(false);
+    setHatDropped(false);
+    setHatDropY(-50);
+    setPlayerLane("center");
+    setPlayerX(PLAYER_X.center);
+    setIsJumping(false);
+    setJumpStartTime(0);
+    setCurrentRound(1);
+    setStripTapPower(0);
+    setStripStage(0);
+    setStripZoom(1.0);
+    setVictoryZoom(1.0);
+    setCostumeVisible({ hat: true, sweater: true, bowtie: true });
+    setFlyingCostume(null);
+    setHitReactionAt(null);
+    setShakeUntil(0);
+    setPerfectPops([]);
+    setSparkles([]);
+    setHitParticles([]);
+    setMeterBump(false);
+    setInterstitialQuote("");
+    setLastAction({ lane: null, time: 0, result: "none" });
+    beatCountRef.current = 0;
+    nextBeatRef.current = 0;
+    roundStartRef.current = 0;
+    setFeedback("Welcome to The Full Weasel!");
+  }, []);
+
+  // ============================================
+  // INPUT HANDLING
+  // ============================================
+  const handleJump = useCallback(() => {
+    if (!isJumping && phase === PHASE_RHYTHM) {
+      setIsJumping(true);
+      setJumpStartTime(clockRef.current);
+      setLastAction({ lane: "center", time: clockRef.current, result: "jump" });
+      vibrate(20);
     }
+  }, [isJumping, phase]);
 
-    flashLane(lane);
+  const handleStripTap = useCallback(() => {
+    if (phase !== PHASE_STRIP) return;
+    setStripTapPower((p) => p + 1);
+    spawnSparkle();
+    vibrate(15);
+  }, [phase, spawnSparkle]);
 
-    if (!selected) {
-      setFeedback("Feel the groove!");
-      setLastAction({ lane, time: currentClock, result: "miss" });
-      setCombo(0); // Reset combo on miss
-      return;
-    }
-
-    // Mark item as resolved in state
-    setItems((current) =>
-      current.map((item, idx) =>
-        idx === bestIndex || item.id === selected.id
-          ? { ...item, resolved: true, resolvedAt: currentClock }
-          : item
-      )
-    );
-
-    const hitDistance = Math.abs(selected.spawnMs + FALL_MS - currentClock);
-
-    if (selected.kind === "hazard") {
-      setFeedback(choice(HAZARD_LINES));
-      setPartyMeter((value) => clamp(value + 5, 0, 100));
-      setLastAction({ lane, time: currentClock, result: "dodge" });
-      vibrate(30); // Short buzz for dodge
-      spawnHitParticles(LANE_X[lane], true);
-      triggerMeterBump();
-      // Combo continues on successful dodge
-      setCombo((c) => {
-        const next = c + 1;
-        setMaxCombo((m) => Math.max(m, next));
-        return next;
-      });
-      return;
-    }
-
-    const isPerfect = hitDistance <= PERFECT_WINDOW_MS;
-    
-    // Combo multiplier: 5+ combo = 1.5x, 10+ = 2x
-    const comboMultiplier = combo >= 10 ? 2 : combo >= 5 ? 1.5 : 1;
-    const basePoints = isPerfect ? 12 : 9;
-    const points = Math.round(basePoints * comboMultiplier);
-    
-    setPartyMeter((value) => clamp(value + points, 0, 100));
-    
-    // Update combo
-    setCombo((c) => {
-      const next = c + 1;
-      setMaxCombo((m) => Math.max(m, next));
-      return next;
-    });
-    
-    // Feedback with combo info
-    const comboText = combo >= 5 ? ` (${combo + 1}x combo!)` : "";
-    setFeedback(choice(SUCCESS_LINES) + comboText);
-    setLastAction({ lane, time: currentClock, result: isPerfect ? "perfect" : "good" });
-    
-    // Haptic feedback
-    vibrate(isPerfect ? [50, 30, 50] : 40);
-    
-    // Visual effects
-    spawnHitParticles(LANE_X[lane], true);
-    triggerMeterBump();
-    
-    if (isPerfect) {
-      spawnPerfect();
-    }
-  };
-
-  const performAction = (lane, source = "tap") => {
-    if (phase === PHASE_LAUNCH) {
-      return;
-    }
-    if (phase === PHASE_RHYTHM) {
-      if (lane && PLAYER_X[lane] !== undefined) {
-        setPlayerLane(lane);
-      }
-      performRhythmAction(lane, source);
-      return;
-    }
-    if (phase === PHASE_POPOFF) {
-      if (lane && PLAYER_X[lane] !== undefined) {
-        setPlayerLane(lane);
-      }
-      runPopoffTap();
-    }
-  };
-
-  const handleGlobalPointerDown = (event) => {
-    if (phase === PHASE_LAUNCH || phase === PHASE_VICTORY) {
-      return;
-    }
+  const handlePointerDown = useCallback((event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const lane = x < 33 ? "left" : x > 66 ? "right" : "center";
-    performAction(lane, "tap");
-  };
 
-  const handleTouchStart = (event) => {
-    if (event.touches && event.touches[0]) {
-      touchStartYRef.current = event.touches[0].clientY;
-    }
-  };
-
-  const handleTouchEnd = (event) => {
-    if (!event.changedTouches || !event.changedTouches[0]) {
-      return;
-    }
-    const startY = touchStartYRef.current;
-    const endY = event.changedTouches[0].clientY;
-    if (startY !== null && startY - endY > 45) {
-      performAction("center", "swipe");
-    }
-    touchStartYRef.current = null;
-  };
-
-  const handleInstallClick = async () => {
-    const promptEvent = deferredPromptRef.current;
-    if (promptEvent) {
-      try {
-        await promptEvent.prompt();
-        const result = await promptEvent.userChoice;
-        if (result?.outcome === "accepted") {
-          setInstallMessage("Installing... check your home screen in a moment.");
+    switch (phase) {
+      case PHASE_TITLE:
+        goToHowTo();
+        break;
+      case PHASE_HOWTO:
+        goToReady();
+        break;
+      case PHASE_READY:
+        startGame();
+        break;
+      case PHASE_RHYTHM:
+        if (lane === "center") {
+          handleJump();
         } else {
-          setInstallMessage("Install was cancelled. You can retry anytime.");
+          setPlayerLane(lane);
+          setLastAction({ lane, time: clockRef.current, result: "move" });
         }
-      } catch {
-        setInstallMessage("Install prompt failed. Use browser menu > Add to Home screen.");
-      }
-      return;
+        break;
+      case PHASE_INTERSTITIAL:
+        startNextRound();
+        break;
+      case PHASE_STRIP:
+        handleStripTap();
+        break;
+      case PHASE_VICTORY:
+        // No interaction during victory animation
+        break;
+      case PHASE_END:
+        // Handled by button
+        break;
+      default:
+        break;
     }
+  }, [phase, goToHowTo, goToReady, startGame, handleJump, startNextRound, handleStripTap]);
 
-    setInstallMessage(
-      "Auto-install is only allowed when browser exposes install prompt. On Android Chrome use menu > Add to Home screen."
-    );
-  };
-
-  const danceFrames = sprite.danceCleanFrames.length
-    ? sprite.danceCleanFrames
-    : [sprite.hitFrames[0]].filter(Boolean);
-  const danceFps = phase === PHASE_VICTORY ? 8 : 11;
+  // ============================================
+  // RENDER COMPUTATIONS
+  // ============================================
+  const danceFrames = sprite.danceCleanFrames.length ? sprite.danceCleanFrames : ["/assets/sprites/dance/dexter_dance_01.png"];
+  const danceFps = phase === PHASE_VICTORY || phase === PHASE_END ? 8 : 11;
   const danceFrameIndex = Math.floor((clockMs / 1000) * danceFps) % Math.max(1, danceFrames.length);
 
   const showHit = hitReactionAt !== null;
-  const hitIndex = clamp(
-    Math.floor(((clockMs - (hitReactionAt || 0)) / 1000) * 15),
-    0,
-    sprite.hitFrames.length - 1
-  );
+  const hitIndex = clamp(Math.floor(((clockMs - (hitReactionAt || 0)) / 1000) * 15), 0, sprite.hitFrames.length - 1);
 
-  const spotlightOpacity = phase === PHASE_POPOFF || phase === PHASE_VICTORY ? 0.74 : 0;
+  const spotlightOpacity = phase === PHASE_STRIP || phase === PHASE_VICTORY || phase === PHASE_END ? 0.74 : 0;
   const meterPercent = clamp(partyMeter, 0, 100);
   const currentPng = fallbackPngs[pngIndex] || "";
   const previousPng = fallbackPngs[pngPrevIndex] || currentPng;
 
+  // Zoom transform for strip/victory phases
+  const getZoomTransform = () => {
+    if (phase === PHASE_STRIP) {
+      return `scale(${stripZoom}) translateY(${(stripZoom - 1) * -8}%)`;
+    }
+    if (phase === PHASE_VICTORY || phase === PHASE_END) {
+      return `scale(${victoryZoom}) translateY(${(victoryZoom - 1) * -5}%)`;
+    }
+    return "scale(1)";
+  };
+
+  // ============================================
+  // RENDER
+  // ============================================
   return (
     <main
-      className={`game-root ${isShaking ? "shake" : ""} ${phaseTransition ? "transitioning" : ""}`}
-      onPointerDown={handleGlobalPointerDown}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className={`game-root ${isShaking ? "shake" : ""}`}
+      onPointerDown={handlePointerDown}
     >
       {/* Permanent subtle vignette */}
       <div className="vignette-overlay" />
-      
+
+      {/* Background layer */}
       <section className="background-layer" aria-hidden="true">
         {backgroundMode === "video" && activeVideo ? (
           <video
@@ -1037,48 +1062,37 @@ function App() {
             }}
           />
         ) : null}
-
         {(backgroundMode === "png" || backgroundMode === "loading") && fallbackPngs.length > 0 ? (
           <>
             <img className="background-png previous" src={previousPng} alt="" />
-            <img
-              key={`${currentPng}-${pngIndex}`}
-              className="background-png current"
-              src={currentPng}
-              alt=""
-            />
+            <img key={`${currentPng}-${pngIndex}`} className="background-png current" src={currentPng} alt="" />
           </>
         ) : null}
       </section>
 
-      <section className="stage-layer">
+      {/* Stage layer (Dexter, items, sharks) - applies zoom transform */}
+      <section className="stage-layer" style={{ transform: getZoomTransform(), transformOrigin: "center 60%" }}>
         {/* Lane indicators at top */}
         {phase === PHASE_RHYTHM && (
           <div className="lane-indicators">
-            <div className={`lane-indicator left ${clockMs < laneFlashUntil.left ? "active" : ""}`}>
-              <span>🧀</span>
-            </div>
-            <div className={`lane-indicator center ${clockMs < laneFlashUntil.center ? "active" : ""}`}>
-              <span>🦈</span>
-            </div>
-            <div className={`lane-indicator right ${clockMs < laneFlashUntil.right ? "active" : ""}`}>
-              <span>🍵</span>
-            </div>
+            <div className={`lane-indicator left ${playerLane === "left" ? "active" : ""}`}>🧀</div>
+            <div className={`lane-indicator center ${isJumping ? "active" : ""}`}>⬆️</div>
+            <div className={`lane-indicator right ${playerLane === "right" ? "active" : ""}`}>🍵</div>
           </div>
         )}
 
         {/* Hit particles */}
         {hitParticles.map((p) => {
           const age = (clockMs - p.spawnedAt) / 500;
-          const x = p.x + p.vx * age;
-          const y = p.y + p.vy * age + 50 * age * age;
+          const px = p.x + p.vx * age;
+          const py = p.y + p.vy * age + 50 * age * age;
           return (
             <span
               key={p.id}
               className={`hit-particle ${p.success ? "success" : "fail"}`}
               style={{
-                left: `${x}%`,
-                top: `${y}%`,
+                left: `${px}%`,
+                top: `${py}%`,
                 opacity: 1 - age,
                 backgroundColor: `hsl(${p.hue}, 80%, 60%)`,
               }}
@@ -1086,11 +1100,25 @@ function App() {
           );
         })}
 
-        <img className="shadow-blob" src={sprite.shadowBlob} alt="" style={{ left: `${playerX}%` }} />
+        {/* Shadow (shrinks when jumping) */}
+        <img 
+          className="shadow-blob" 
+          src={sprite.shadowBlob} 
+          alt="" 
+          style={{ 
+            left: `${playerX}%`,
+            transform: `translateX(-50%) ${isJumping ? `scale(${1 - jumpY * 0.015})` : ""}`,
+            opacity: isJumping ? 0.5 : 0.74,
+          }} 
+        />
 
+        {/* Dexter character */}
         <div
-          className={`dexter-wrapper ${phase === PHASE_POPOFF ? "dexter-popoff" : ""}`}
-          style={{ left: `${playerX}%` }}
+          className={`dexter-wrapper ${phase === PHASE_STRIP ? "dexter-strip" : ""}`}
+          style={{ 
+            left: `${playerX}%`,
+            bottom: `${12 + jumpY}vh`,
+          }}
         >
           {showHit ? (
             <img className="dexter-frame" src={sprite.hitFrames[hitIndex]} alt="Dexter reacts" />
@@ -1098,10 +1126,37 @@ function App() {
             <img className="dexter-frame" src={danceFrames[danceFrameIndex]} alt="Dexter dances" />
           )}
 
+          {/* Flying costume pieces during strip phase */}
+          {(phase === PHASE_STRIP || phase === PHASE_VICTORY || phase === PHASE_END) && (
+            <>
+              {flyingCostume === "hat" && (
+                <div className="flying-costume hat">🎩</div>
+              )}
+              {flyingCostume === "sweater" && (
+                <div className="flying-costume sweater">👔</div>
+              )}
+              {flyingCostume === "bowtie" && (
+                <div className="flying-costume bowtie">🎀</div>
+              )}
+            </>
+          )}
+
+          {/* Birthday hat drop for ending */}
+          {hatDropped && (
+            <div 
+              className="dropped-hat"
+              style={{ top: `${hatDropY}%` }}
+            >
+              🎉
+            </div>
+          )}
+
+          {/* Perfect pop effects */}
           {perfectPops.map((entry) => (
             <img key={entry.id} className="perfect-pop" src={sprite.perfectPop} alt="Perfect" />
           ))}
 
+          {/* Sparkle effects */}
           {sparkles.map((entry) => (
             <span
               key={entry.id}
@@ -1111,28 +1166,56 @@ function App() {
           ))}
         </div>
 
+        {/* Item layer (falling items + horizontal sharks) */}
         <div className="item-layer">
+          {/* Falling good items */}
           {items.map((item) => {
-            const progress = (clockMs - item.spawnMs) / FALL_MS;
+            const progress = (clockMs - item.spawnMs) / roundConfig.fallMs;
             const y = -15 + progress * 102;
-            if (y > 106 || item.resolved) {
-              return null;
-            }
-            const image = item.kind === "hazard" ? sprite.sharkFin : item.subtype === "cheese" ? sprite.nanaCheese : sprite.icedTea;
+            if (y > 106 || item.resolved) return null;
+            const image = item.subtype === "cheese" ? sprite.nanaCheese : sprite.icedTea;
+            const subtypeClass = item.subtype === "cheese" ? "cheese" : "tea";
             return (
               <img
                 key={item.id}
-                className={`falling-item ${item.kind}`}
+                className={`falling-item good ${subtypeClass}`}
                 src={image}
                 alt=""
                 style={{ left: `${LANE_X[item.lane]}%`, top: `${y}%` }}
               />
             );
           })}
-          <div className="hit-line" />
+
+          {/* Horizontal sharks */}
+          {sharks.map((shark) => {
+            const elapsed = clockMs - shark.spawnMs;
+            const travelTime = 2500 / (roundConfig.sharkSpeed / 45);
+            const progress = elapsed / travelTime;
+            const sharkX = shark.fromLeft ? progress * 120 - 10 : 110 - progress * 120;
+            if (sharkX < -20 || sharkX > 120) return null;
+            return (
+              <img
+                key={shark.id}
+                className={`horizontal-shark ${shark.fromLeft ? "from-left" : "from-right"}`}
+                src={sprite.sharkFin}
+                alt=""
+                style={{ 
+                  left: `${sharkX}%`, 
+                  top: `${shark.y}%`,
+                  transform: `translate(-50%, -50%) ${shark.fromLeft ? "" : "scaleX(-1)"}`,
+                }}
+              />
+            );
+          })}
+
+          {/* Collection zone indicator (debug) */}
+          {phase === PHASE_RHYTHM && (
+            <div className="collect-zone" style={{ top: `${COLLECT_ZONE_TOP}%`, height: `${COLLECT_ZONE_BOTTOM - COLLECT_ZONE_TOP}%` }} />
+          )}
         </div>
       </section>
 
+      {/* Spotlight vignette overlay */}
       <img
         className="spotlight-overlay"
         src={sprite.spotlight}
@@ -1140,74 +1223,65 @@ function App() {
         style={{ opacity: spotlightOpacity }}
       />
 
+      {/* UI Layer */}
       <section className="ui-layer">
-        <div className={`party-meter ${beatPulse ? "beat-pulse" : ""} ${meterBump ? "bump" : ""}`}>
-          <span>PARTY</span>
-          <div className="party-meter-track">
-            <div className="party-meter-fill" style={{ width: `${meterPercent}%` }}>
-              <div className="meter-shimmer" />
+        {/* Party meter - show during rhythm and strip phases */}
+        {(phase === PHASE_RHYTHM || phase === PHASE_STRIP) && (
+          <div className={`party-meter ${beatPulse ? "beat-pulse" : ""} ${meterBump ? "bump" : ""}`}>
+            <span>PARTY</span>
+            <div className="party-meter-track">
+              <div className="party-meter-fill" style={{ width: `${meterPercent}%` }}>
+                <div className="meter-shimmer" />
+              </div>
+            </div>
+            <strong>{Math.round(meterPercent)}%</strong>
+          </div>
+        )}
+
+        {/* Round indicator */}
+        {phase === PHASE_RHYTHM && (
+          <div className="round-indicator">Round {currentRound}/3</div>
+        )}
+
+        {/* Feedback text */}
+        {(phase === PHASE_RHYTHM || phase === PHASE_STRIP) && (
+          <div className="feedback-box">{feedback}</div>
+        )}
+
+        {/* Strip phase UI */}
+        {phase === PHASE_STRIP && (
+          <div className="strip-ui">
+            <h2 className="strip-title flashing">I CAN'T TAKE IT ANYMORE!</h2>
+            <p className="strip-instruction">TAP RAPIDLY!</p>
+            <div className="strip-progress">
+              <div className="strip-bar" style={{ width: `${(stripTapPower / STRIP_THRESHOLDS[STRIP_THRESHOLDS.length - 1]) * 100}%` }} />
+            </div>
+            <div className="strip-stages">
+              {STRIP_STAGES.map((stage, i) => (
+                <span key={stage} className={stripStage > i ? "removed" : ""}>
+                  {stage === "hat" ? "🎩" : stage === "sweater" ? "👔" : "🎀"}
+                </span>
+              ))}
             </div>
           </div>
-          <strong>{Math.round(meterPercent)}%</strong>
-          {combo >= 3 && <span className="combo-badge">{combo}x</span>}
-        </div>
+        )}
 
-        <div className="feedback-box">{feedback}</div>
-
-        {phase === PHASE_POPOFF ? (
-          <div className="popoff-card">
-            <h2>THIS IS THE BEST BIRTHDAY EVER!</h2>
-            <p>
-              Tap anywhere or swipe up: {popoffTaps}/{POPOFF_TARGET_TAPS}
-            </p>
-          </div>
-        ) : null}
-
-        {showOfflineMediaHint ? <p className="offline-hint">Offline media unavailable.</p> : null}
+        {showOfflineMediaHint && <p className="offline-hint">Offline media unavailable.</p>}
       </section>
 
-      {/* Full-height invisible tap zones */}
-      <section className="controls">
-        <button
-          type="button"
-          className={clockMs < laneFlashUntil.left ? "flash" : ""}
-          onPointerDown={(event) => {
-            event.stopPropagation();
-            performAction("left", "tap");
-          }}
-          aria-label="Left - Eat Cheese"
-        />
-        <button
-          type="button"
-          className={clockMs < laneFlashUntil.center ? "flash" : ""}
-          onPointerDown={(event) => {
-            event.stopPropagation();
-            performAction("center", "tap");
-          }}
-          aria-label="Center - Dodge Shark"
-        />
-        <button
-          type="button"
-          className={clockMs < laneFlashUntil.right ? "flash" : ""}
-          onPointerDown={(event) => {
-            event.stopPropagation();
-            performAction("right", "tap");
-          }}
-          aria-label="Right - Drink Tea"
-        />
-      </section>
-
-      {/* Visible button labels at bottom */}
+      {/* Control labels at bottom */}
       {phase === PHASE_RHYTHM && (
         <div className="button-labels">
-          <div className={`button-label ${clockMs < laneFlashUntil.left ? "flash" : ""}`}>🧀 LEFT</div>
-          <div className={`button-label ${clockMs < laneFlashUntil.center ? "flash" : ""}`}>🦈 DODGE</div>
-          <div className={`button-label ${clockMs < laneFlashUntil.right ? "flash" : ""}`}>🍵 RIGHT</div>
+          <div className={`button-label ${playerLane === "left" ? "active" : ""}`}>🧀 LEFT</div>
+          <div className={`button-label ${isJumping ? "active" : ""}`}>⬆️ JUMP</div>
+          <div className={`button-label ${playerLane === "right" ? "active" : ""}`}>🍵 RIGHT</div>
         </div>
       )}
 
-      {phase === PHASE_VICTORY ? (
+      {/* Victory layer */}
+      {(phase === PHASE_VICTORY || phase === PHASE_END) && (
         <section className="victory-layer">
+          {/* Confetti particles */}
           {confetti.map((piece) => (
             <span
               key={piece.id}
@@ -1223,17 +1297,35 @@ function App() {
             />
           ))}
 
-          <img className={`censor-slam ${showSlam ? "show" : ""}`} src={sprite.censorSlam} alt="" />
-          <h1>HAPPY BIRTHDAY NANA CHEESE</h1>
-          <p>You can leave your hat on.</p>
-          <img className="victory-subtext" src={sprite.victorySubtext} alt="You can leave your hat on." />
+          {/* Censor bar - positioned LOWER for the joke */}
+          <img 
+            className={`censor-slam lower ${showSlam ? "show" : ""}`} 
+            src={sprite.censorSlam} 
+            alt="" 
+          />
+          
+          <h1 className="victory-title">HAPPY BIRTHDAY!</h1>
+          
+          {/* The mandatory ending quote */}
+          <p className="victory-quote">"You can leave your hat on."</p>
         </section>
-      ) : null}
+      )}
 
-      {phase === PHASE_LAUNCH ? (
-        <section className={`launch-screen ${assetsLoaded ? "loaded" : ""}`}>
-          {sprite.titleScreen ? <img className="title-screen-image" src={sprite.titleScreen} alt="The Full Weasel" /> : null}
+      {/* End screen with Play Again button */}
+      {phase === PHASE_END && (
+        <section className="end-screen">
+          <button className="play-again-btn" onClick={resetGame}>
+            🎉 Play Again 🎉
+          </button>
+        </section>
+      )}
 
+      {/* Title Screen */}
+      {phase === PHASE_TITLE && (
+        <section className={`title-screen ${assetsLoaded ? "loaded" : ""}`}>
+          {sprite.titleScreen && (
+            <img className="title-screen-image" src={sprite.titleScreen} alt="The Full Weasel" />
+          )}
           {!assetsLoaded ? (
             <div className="loading-overlay">
               <div className="loading-content">
@@ -1245,62 +1337,76 @@ function App() {
               </div>
             </div>
           ) : (
-            <div className="launch-panel">
+            <div className="title-panel">
               <h1>The Full Weasel</h1>
-              
-              <div className="how-to-play">
-                <h2>How To Play</h2>
-                <ul className="instructions-list">
-                  <li><span className="lane-icon left">🧀</span> <strong>LEFT tap</strong> = eat Nana Cheese</li>
-                  <li><span className="lane-icon right">🍵</span> <strong>RIGHT tap</strong> = drink Iced Tea</li>
-                  <li><span className="lane-icon center">🦈</span> <strong>CENTER tap / swipe UP</strong> = dodge Shark</li>
-                </ul>
-                <p className="goal-text">Fill the PARTY METER to 100% to win!</p>
-              </div>
-
-              <div className="practice-toggle">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={practiceMode}
-                    onChange={(e) => setPracticeMode(e.target.checked)}
-                  />
-                  <span className="toggle-slider" />
-                  Practice Mode (slower speed)
-                </label>
-              </div>
-
-              <button
-                type="button"
-                className="start-button"
-                onPointerDown={(event) => event.stopPropagation()}
-                onClick={startGame}
-              >
-                🎉 TAP TO START 🎉
-              </button>
+              <p className="tap-hint">Tap anywhere to continue</p>
             </div>
           )}
         </section>
-      ) : null}
+      )}
 
+      {/* How To Play Screen */}
+      {phase === PHASE_HOWTO && (
+        <section className="howto-screen">
+          <div className="howto-panel">
+            <h2>How To Play</h2>
+            <ul className="instructions-list">
+              <li><span className="lane-icon">🧀</span> <strong>LEFT tap</strong> = eat cheese</li>
+              <li><span className="lane-icon">🍵</span> <strong>RIGHT tap</strong> = drink iced tea</li>
+              <li><span className="lane-icon">⬆️</span> <strong>MIDDLE tap</strong> = jump (for sharks)</li>
+            </ul>
+            <p className="goal-text">Fill the PARTY METER to 100%!</p>
+            <p className="tap-hint">Tap anywhere to continue</p>
+          </div>
+        </section>
+      )}
+
+      {/* Tap to Start Screen */}
+      {phase === PHASE_READY && (
+        <section className="ready-screen">
+          <div className="ready-panel">
+            <h1>🎂</h1>
+            <h2>Ready?</h2>
+            <p className="tap-hint pulse">TAP TO START</p>
+          </div>
+        </section>
+      )}
+
+      {/* Interstitial (between rounds) */}
+      {phase === PHASE_INTERSTITIAL && (
+        <section className="interstitial-screen">
+          <div className="interstitial-panel">
+            <p className="round-complete">Round {currentRound} Complete!</p>
+            <p className="interstitial-quote">"{interstitialQuote}"</p>
+            <p className="tap-hint">Tap to continue</p>
+          </div>
+        </section>
+      )}
+
+      {/* Debug overlay - comprehensive info */}
       {showDebug ? (
         <section className="debug-overlay">
           <div className="debug-content">
             <strong>DEBUG</strong>
             <p>Phase: {phase}</p>
             <p>Clock: {Math.round(clockMs)}ms</p>
-            <p>Party: {Math.round(partyMeter)}%</p>
-            <p>Combo: {combo} (max: {maxCombo})</p>
+            <p>Round: {currentRound}</p>
+            <p>Speed: {roundConfig.fallMs}ms / shk:{roundConfig.sharkSpeed}</p>
+            <p>Lane: {playerLane}</p>
+            <p>Jump: {isJumping ? `Y=${jumpY.toFixed(1)}vh` : "no"}</p>
             <p>Items: {items.filter(i => !i.resolved).length}</p>
-            <p>Mode: {practiceMode ? "Practice" : "Normal"}</p>
-            <p>Last: {lastAction.lane || "-"} → {lastAction.result}</p>
-            <p className="debug-section">--- Hit Windows ---</p>
-            {items.filter(i => !i.resolved).slice(0, 3).map(item => {
-              const hitTime = item.spawnMs + FALL_MS;
-              const dist = hitTime - clockMs;
-              const inWindow = Math.abs(dist) <= HIT_WINDOW_MS;
-              return <p key={item.id} className={inWindow ? "in-window" : ""}>{item.lane}: {Math.round(dist)}ms {inWindow ? "✓" : ""}</p>;
-            })}
+            <p>Sharks: {sharks.filter(s => !s.resolved).length}</p>
+            <p>Party: {Math.round(partyMeter)}%</p>
+            <p className="debug-section">--- Strip Phase ---</p>
+            <p>TapPower: {stripTapPower}</p>
+            <p>Stage: {stripStage}/3</p>
+            <p>Zoom: {stripZoom.toFixed(2)}</p>
+            <p className="debug-section">--- Victory ---</p>
+            <p>VZoom: {victoryZoom.toFixed(2)}</p>
+            <p>Censor: {showSlam ? "shown" : "hidden"}</p>
+            <p>Hat: {hatDropped ? `Y=${hatDropY.toFixed(0)}` : "waiting"}</p>
+            <p className="debug-section">--- Last Action ---</p>
+            <p>{lastAction.lane || "-"} → {lastAction.result}</p>
           </div>
           <button onClick={() => setShowDebug(false)}>✕</button>
         </section>
@@ -1313,9 +1419,6 @@ function App() {
           🐛
         </button>
       )}
-
-      {/* Phase transition overlay */}
-      {phaseTransition && <div className="phase-transition-overlay" />}
     </main>
   );
 }

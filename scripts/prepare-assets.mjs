@@ -172,21 +172,21 @@ const spriteDefinitions = [
   },
   {
     role: "hazard_shark_fin",
-    sourceRel: "assets_raw/hazard_shark_fin.png",
+    sourceRel: "assets_raw/Shark.png",
     destinationRel: "assets/sprites/items/hazard_shark_fin.png",
-    reason: "Hazard lane object.",
+    reason: "Horizontal swimming shark hazard.",
   },
   {
     role: "item_nana_cheese",
-    sourceRel: "assets_raw/item_nana_cheese.png",
+    sourceRel: "assets_raw/Cheese.png",
     destinationRel: "assets/sprites/items/item_nana_cheese.png",
-    reason: "Left lane good item.",
+    reason: "Left lane cheese item - auto-collected.",
   },
   {
     role: "item_unsweetened_iced_tea",
-    sourceRel: "assets_raw/item_unsweetened_iced_tea.png",
+    sourceRel: "assets_raw/Iced_Tea.png",
     destinationRel: "assets/sprites/items/item_unsweetened_iced_tea.png",
-    reason: "Right lane good item.",
+    reason: "Right lane iced tea item - auto-collected.",
   },
   {
     role: "overlay_party_hat",
