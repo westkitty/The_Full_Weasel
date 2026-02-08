@@ -49,16 +49,31 @@ const SHARK_Y_POSITION = 75; // percentage from top where sharks swim
 // RANDOM MOVIE QUOTES (Jaws + Full Monty parodies)
 // ============================================
 const INTERSTITIAL_QUOTES = [
+  // Jaws parodies
   "We're gonna need a bigger dance floor.",
   "Just when you thought it was safe to eat cheese...",
   "You've got some Cheddar on you.",
-  "This is a right good knees-up!",
   "Smile, you magnificent beast!",
+  "Here's to swimmin' with bow-legged ferrets!",
+  "This shark's got rhythm!",
+  "That's a twenty-footer... twenty feet of STYLE!",
+  "You're gonna need a bigger bow tie.",
+  "Show me the way to go home, I'm tired and I want to DANCE.",
+  "Hooper drives the boat, chief... but I drive the dance floor!",
+  // Full Monty parodies
   "The Full Weasel... it's all or nothing now.",
   "Farewell and adieu to my sensible sweater...",
-  "Here's to swimmin' with bow-legged ferrets!",
+  "This is a right good knees-up!",
   "You call that dancing? That's PERFECT!",
   "Anti-up! It's getting hot in here!",
+  "We could be striptease artistes!",
+  "You've got to learn... to STRUT.",
+  "Fat David had nowt to worry about!",
+  "Gentlemen, the lunchbox has landed.",
+  "It's brass monkeys out there... perfect for dancing!",
+  "I've got a degree in engineering... and a master's in MOVES!",
+  "Nowt wrong with a bit of wobble!",
+  "Horse it, lads! Give it some WELLY!",
 ];
 
 // ============================================
@@ -91,6 +106,29 @@ const FALLBACK_MANIFEST = {
 // ============================================
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const choice = (items) => items[Math.floor(Math.random() * items.length)];
+
+// Shuffle array using Fisher-Yates
+const shuffle = (arr) => {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+};
+
+// Create a non-repeating quote picker
+let shuffledQuotes = shuffle(INTERSTITIAL_QUOTES);
+let quoteIndex = 0;
+const getNextQuote = () => {
+  const quote = shuffledQuotes[quoteIndex];
+  quoteIndex++;
+  if (quoteIndex >= shuffledQuotes.length) {
+    shuffledQuotes = shuffle(INTERSTITIAL_QUOTES);
+    quoteIndex = 0;
+  }
+  return quote;
+};
 
 function makeIdFactory() {
   let nextId = 1;
@@ -610,7 +648,7 @@ function App() {
     if (partyMeter >= 100) {
       if (currentRound < 3) {
         // Advance to next round - show congratulations then quote
-        setInterstitialQuote("Congratulations! " + choice(INTERSTITIAL_QUOTES));
+        setInterstitialQuote("Congratulations! " + getNextQuote());
         setInterstitialType("complete");
         setPhase(PHASE_INTERSTITIAL);
         setItems([]);
@@ -908,7 +946,7 @@ function App() {
     roundStartRef.current = 0;
     lastTickRef.current = performance.now();
     // Show quote before round 1
-    setInterstitialQuote(choice(INTERSTITIAL_QUOTES));
+    setInterstitialQuote(getNextQuote());
     setInterstitialType("start");
     setPhase(PHASE_INTERSTITIAL);
     void startMusicIfNeeded();
@@ -916,8 +954,15 @@ function App() {
 
   const startNextRound = useCallback(() => {
     // Advance round number if coming from a completed round
+    let roundNum = currentRound;
     if (interstitialType === "complete") {
-      setCurrentRound((r) => r + 1);
+      roundNum = currentRound + 1;
+      setCurrentRound(roundNum);
+    }
+    // Switch background video for each round (if we have multiple)
+    if (backgroundVideos.length > 1) {
+      const bgIndex = (roundNum - 1) % backgroundVideos.length;
+      setActiveVideo(backgroundVideos[bgIndex]);
     }
     // Actually start gameplay for current/next round
     roundStartRef.current = clockRef.current;
@@ -926,10 +971,9 @@ function App() {
     setSharks([]);
     beatCountRef.current = 0;
     nextBeatRef.current = clockRef.current;
-    const roundNum = interstitialType === "complete" ? currentRound + 1 : currentRound;
     setFeedback(`Round ${roundNum} - Let's go!`);
     setPhase(PHASE_RHYTHM);
-  }, [currentRound, interstitialType]);
+  }, [currentRound, interstitialType, backgroundVideos]);
 
   const resetGame = useCallback(() => {
     // Full state reset
@@ -1139,7 +1183,7 @@ function App() {
         <div
           className={`dexter-wrapper ${phase === PHASE_STRIP ? "dexter-strip" : ""}`}
           style={{ 
-            left: `${playerX}%`,
+            left: phase === PHASE_STRIP || phase === PHASE_VICTORY || phase === PHASE_END ? "50%" : `${playerX}%`,
             bottom: `${12 + jumpY}vh`,
           }}
         >
