@@ -610,6 +610,9 @@ function App() {
     // Check if round time elapsed
     if (elapsed >= roundConfig.duration) {
       if (currentRound < 3) {
+        // Advance to next round
+        const nextRound = currentRound + 1;
+        setCurrentRound(nextRound);
         // Show interstitial quote between rounds
         setInterstitialQuote(choice(INTERSTITIAL_QUOTES));
         setPhase(PHASE_INTERSTITIAL);
@@ -906,20 +909,20 @@ function App() {
     nextBeatRef.current = 0;
     roundStartRef.current = 0;
     lastTickRef.current = performance.now();
-    setFeedback("Tap LEFT or RIGHT to move!");
-    setPhase(PHASE_RHYTHM);
+    // Show quote before round 1
+    setInterstitialQuote(choice(INTERSTITIAL_QUOTES));
+    setPhase(PHASE_INTERSTITIAL);
     void startMusicIfNeeded();
   }, [startMusicIfNeeded]);
 
   const startNextRound = useCallback(() => {
-    const nextRound = currentRound + 1;
-    setCurrentRound(nextRound);
+    // Actually start gameplay for current round
     roundStartRef.current = clockRef.current;
     setItems([]);
     setSharks([]);
     beatCountRef.current = 0;
     nextBeatRef.current = clockRef.current;
-    setFeedback(`Round ${nextRound} - Faster!`);
+    setFeedback(`Round ${currentRound} - Let's go!`);
     setPhase(PHASE_RHYTHM);
   }, [currentRound]);
 
@@ -1388,9 +1391,9 @@ function App() {
       {phase === PHASE_INTERSTITIAL && (
         <section className="interstitial-screen">
           <div className="interstitial-panel">
-            <p className="round-complete">Round {currentRound} Complete!</p>
+            <p className="round-complete">Round {currentRound}</p>
             <p className="interstitial-quote">"{interstitialQuote}"</p>
-            <p className="tap-hint">Tap to continue</p>
+            <p className="tap-hint">Tap to start</p>
           </div>
         </section>
       )}
