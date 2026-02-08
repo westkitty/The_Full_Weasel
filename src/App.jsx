@@ -25,9 +25,9 @@ const HIT_REACTION_MS = 260;
 
 // Round configuration - each round gets faster
 const ROUND_CONFIG = [
-  { round: 1, fallMs: 2800, spawnMultiplier: 1.0, sharkSpeed: 45, duration: 25000 },
-  { round: 2, fallMs: 2400, spawnMultiplier: 1.15, sharkSpeed: 55, duration: 25000 },
-  { round: 3, fallMs: 2100, spawnMultiplier: 1.25, sharkSpeed: 65, duration: 30000 },
+  { round: 1, fallMs: 2800, spawnMultiplier: 1.0, sharkSpeed: 25, duration: 25000 },
+  { round: 2, fallMs: 2400, spawnMultiplier: 1.15, sharkSpeed: 30, duration: 25000 },
+  { round: 3, fallMs: 2100, spawnMultiplier: 1.25, sharkSpeed: 35, duration: 30000 },
 ];
 
 // Jump mechanics
@@ -419,13 +419,13 @@ function App() {
   useEffect(() => {
     if (phase !== PHASE_RHYTHM) return;
 
-    // Spawn shark every ~3 seconds, adjusted by round
-    const sharkInterval = 3000 / roundConfig.spawnMultiplier;
+    // Spawn shark every ~8 seconds, adjusted by round (rare, one at a time)
+    const sharkInterval = 8000 / roundConfig.spawnMultiplier;
     const currentInterval = Math.floor(clockMs / sharkInterval);
     const prevInterval = Math.floor((clockMs - 33) / sharkInterval);
     const shouldSpawn = currentInterval > prevInterval;
 
-    if (shouldSpawn && sharks.length < 2) {
+    if (shouldSpawn && sharks.length < 1) {
       const fromLeft = Math.random() > 0.5;
       setSharks((current) => [
         ...current,
