@@ -164,6 +164,7 @@ function App() {
   // Round system state
   const [currentRound, setCurrentRound] = useState(1);
   const [interstitialQuote, setInterstitialQuote] = useState("");
+  const [interstitialType, setInterstitialType] = useState("start"); // "start" or "complete"
 
   // Jump state
   const [isJumping, setIsJumping] = useState(false);
@@ -598,44 +599,29 @@ function App() {
 
   // ============================================
   // ROUND PROGRESSION
-  // Check for round completion or party meter full
+  // Check for party meter full -> advance round or go to strip
   // ============================================
   useEffect(() => {
     if (phase !== PHASE_RHYTHM) return;
 
-    const elapsed = clockMs - roundStartRef.current;
-
-    // Check if party meter is full -> go to strip phase
+    // Check if party meter is full
     if (partyMeter >= 100) {
-      setPhase(PHASE_STRIP);
-      setItems([]);
-      setSharks([]);
-      setFeedback("THIS IS THE BEST BIRTHDAY EVER!");
-      return;
-    }
-
-    // Check if round time elapsed
-    if (elapsed >= roundConfig.duration) {
       if (currentRound < 3) {
-        // Advance to next round
-        const nextRound = currentRound + 1;
-        setCurrentRound(nextRound);
-        // Show interstitial quote between rounds
-        setInterstitialQuote(choice(INTERSTITIAL_QUOTES));
+        // Advance to next round with congratulations
+        setInterstitialQuote("Congratulations!");
+        setInterstitialType("complete");
         setPhase(PHASE_INTERSTITIAL);
+        setItems([]);
+        setSharks([]);
       } else {
-        // After round 3, if meter is at least 80%, trigger strip phase
-        if (partyMeter >= 80) {
-          setPartyMeter(100);
-          setPhase(PHASE_STRIP);
-          setItems([]);
-          setSharks([]);
-          setFeedback("THIS IS THE BEST BIRTHDAY EVER!");
-        }
-        // Otherwise keep playing until 100%
+        // Round 3 complete -> Strip phase!
+        setPhase(PHASE_STRIP);
+        setItems([]);
+        setSharks([]);
+        setFeedback("THIS IS THE BEST BIRTHDAY EVER!");
       }
     }
-  }, [clockMs, phase, partyMeter, currentRound, roundConfig.duration]);
+  }, [clockMs, phase, partyMeter, currentRound]);
 
   // ============================================
   // STRIP PHASE ZOOM PROGRESSION
@@ -920,20 +906,27 @@ function App() {
     lastTickRef.current = performance.now();
     // Show quote before round 1
     setInterstitialQuote(choice(INTERSTITIAL_QUOTES));
+    setInterstitialType("start");
     setPhase(PHASE_INTERSTITIAL);
     void startMusicIfNeeded();
   }, [startMusicIfNeeded]);
 
   const startNextRound = useCallback(() => {
-    // Actually start gameplay for current round
+    // Advance round number if coming from a completed round
+    if (interstitialType === "complete") {
+      setCurrentRound((r) => r + 1);
+    }
+    // Actually start gameplay for current/next round
     roundStartRef.current = clockRef.current;
+    setPartyMeter(0); // Reset meter for new round
     setItems([]);
     setSharks([]);
     beatCountRef.current = 0;
     nextBeatRef.current = clockRef.current;
-    setFeedback(`Round ${currentRound} - Let's go!`);
+    const roundNum = interstitialType === "complete" ? currentRound + 1 : currentRound;
+    setFeedback(`Round ${roundNum} - Let's go!`);
     setPhase(PHASE_RHYTHM);
-  }, [currentRound]);
+  }, [currentRound, interstitialType]);
 
   const resetGame = useCallback(() => {
     // Full state reset
@@ -966,6 +959,7 @@ function App() {
     setHitParticles([]);
     setMeterBump(false);
     setInterstitialQuote("");
+    setInterstitialType("start");
     setLastAction({ lane: null, time: 0, result: "none" });
     beatCountRef.current = 0;
     nextBeatRef.current = 0;
@@ -1402,9 +1396,19 @@ function App() {
       {phase === PHASE_INTERSTITIAL && (
         <section className="interstitial-screen">
           <div className="interstitial-panel">
-            <p className="round-complete">Round {currentRound}</p>
-            <p className="interstitial-quote">"{interstitialQuote}"</p>
-            <p className="tap-hint">Tap to start</p>
+            {interstitialType === "complete" ? (
+              <>
+                <p className="round-complete">Round {currentRound} Complete!</p>
+                <p className="interstitial-quote">{interstitialQuote}</p>
+                <p className="tap-hint">Tap to start Round {currentRound + 1}</p>
+              </>
+            ) : (
+              <>
+                <p className="round-complete">Round {currentRound}</p>
+                <p className="interstitial-quote">"{interstitialQuote}"</p>
+                <p className="tap-hint">Tap to start</p>
+              </>
+            )}
           </div>
         </section>
       )}
