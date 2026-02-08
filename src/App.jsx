@@ -53,10 +53,12 @@ const INTERSTITIAL_QUOTES = [
   "Just when you thought it was safe to eat cheese...",
   "You've got some Cheddar on you.",
   "This is a right good knees-up!",
-  "Smile, you son of a birthday boy!",
+  "Smile, you magnificent beast!",
   "The Full Weasel... it's all or nothing now.",
   "Farewell and adieu to my sensible sweater...",
   "Here's to swimmin' with bow-legged ferrets!",
+  "You call that dancing? That's PERFECT!",
+  "Anti-up! It's getting hot in here!",
 ];
 
 // ============================================
@@ -607,8 +609,8 @@ function App() {
     // Check if party meter is full
     if (partyMeter >= 100) {
       if (currentRound < 3) {
-        // Advance to next round with congratulations
-        setInterstitialQuote("Congratulations!");
+        // Advance to next round - show congratulations then quote
+        setInterstitialQuote("Congratulations! " + choice(INTERSTITIAL_QUOTES));
         setInterstitialType("complete");
         setPhase(PHASE_INTERSTITIAL);
         setItems([]);
@@ -625,18 +627,19 @@ function App() {
 
   // ============================================
   // STRIP PHASE ZOOM PROGRESSION
-  // Zoom increases with tap power and strip stage
+  // Zoom increases dramatically with each tap to fill screen
   // ============================================
   useEffect(() => {
     if (phase !== PHASE_STRIP) return;
 
-    // Base zoom increases with tap power
-    const baseZoom = 1.05 + (stripTapPower / 100) * 0.3;
-    // Additional zoom per stage
-    const stageZoom = stripStage * 0.12;
+    // Dramatically increase zoom with tap power - range from 1.0 to 2.8
+    // At max taps (75), should nearly fill the screen with Dexter
+    const maxTaps = STRIP_THRESHOLDS[STRIP_THRESHOLDS.length - 1];
+    const progress = stripTapPower / maxTaps;
+    const targetZoom = 1.0 + (progress * 1.8);
     
-    setStripZoom(clamp(baseZoom + stageZoom, 1.0, 1.6));
-  }, [phase, stripTapPower, stripStage]);
+    setStripZoom(clamp(targetZoom, 1.0, 2.8));
+  }, [phase, stripTapPower]);
 
   // ============================================
   // STRIP PHASE THRESHOLD CHECK
@@ -1045,7 +1048,9 @@ function App() {
   // Zoom transform for strip/victory phases
   const getZoomTransform = () => {
     if (phase === PHASE_STRIP) {
-      return `scale(${stripZoom}) translateY(${(stripZoom - 1) * -8}%)`;
+      // Larger zoom needs more vertical adjustment to keep Dexter centered
+      const translateAmt = (stripZoom - 1) * -12;
+      return `scale(${stripZoom}) translateY(${translateAmt}%)`;
     }
     if (phase === PHASE_VICTORY || phase === PHASE_END) {
       return `scale(${victoryZoom}) translateY(${(victoryZoom - 1) * -5}%)`;
