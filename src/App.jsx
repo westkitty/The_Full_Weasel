@@ -855,7 +855,7 @@ function App() {
     const players = initializeAudioPlayers();
     state.started = true;
     state.activePlayer = "a";
-    state.currentIndex = pickRandomIndex(tracks.length);
+    state.currentIndex = 0; // Start with first track for round 1
 
     const active = players.a;
     active.src = tracks[state.currentIndex];
@@ -866,6 +866,50 @@ function App() {
       state.started = false;
       setShowOfflineMediaHint(!navigator.onLine);
     }
+  }, []);
+
+  const switchMusicForRound = useCallback((roundNum) => {
+    const state = musicRef.current;
+    if (!state.started || !state.players) return;
+    
+    const tracks = (manifestRef.current.music || []).map((track) => track.url);
+    if (tracks.length <= 1) return;
+    
+    // Use different track for each round (cycling through available tracks)
+    const newIndex = (roundNum - 1) % tracks.length;
+    if (newIndex === state.currentIndex) return; // Already on this track
+    
+    // Get current active player and the other one for crossfade
+    const { a, b } = state.players;
+    const activePlayer = state.activePlayer === "a" ? a : b;
+    const nextPlayer = state.activePlayer === "a" ? b : a;
+    
+    // Load new track on the inactive player
+    nextPlayer.src = tracks[newIndex];
+    nextPlayer.currentTime = 0;
+    nextPlayer.volume = 0;
+    
+    // Play new track and crossfade
+    nextPlayer.play().then(() => {
+      // Quick crossfade over 500ms
+      let fadeProgress = 0;
+      const fadeInterval = setInterval(() => {
+        fadeProgress += 0.1;
+        if (fadeProgress >= 1) {
+          activePlayer.pause();
+          activePlayer.volume = 1;
+          nextPlayer.volume = 1;
+          state.activePlayer = state.activePlayer === "a" ? "b" : "a";
+          state.currentIndex = newIndex;
+          clearInterval(fadeInterval);
+        } else {
+          activePlayer.volume = 1 - fadeProgress;
+          nextPlayer.volume = fadeProgress;
+        }
+      }, 50);
+    }).catch(() => {
+      // If play fails, just keep current track
+    });
   }, []);
 
   // ============================================
@@ -964,6 +1008,8 @@ function App() {
       const bgIndex = (roundNum - 1) % backgroundVideos.length;
       setActiveVideo(backgroundVideos[bgIndex]);
     }
+    // Switch music track for each round
+    switchMusicForRound(roundNum);
     // Actually start gameplay for current/next round
     roundStartRef.current = clockRef.current;
     setPartyMeter(0); // Reset meter for new round
@@ -973,7 +1019,7 @@ function App() {
     nextBeatRef.current = clockRef.current;
     setFeedback(`Round ${roundNum} - Let's go!`);
     setPhase(PHASE_RHYTHM);
-  }, [currentRound, interstitialType, backgroundVideos]);
+  }, [currentRound, interstitialType, backgroundVideos, switchMusicForRound]);
 
   const resetGame = useCallback(() => {
     // Full state reset
