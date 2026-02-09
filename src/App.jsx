@@ -154,6 +154,15 @@ function pickRandomIndex(length, exclude = -1) {
   return index;
 }
 
+// Helper to resolve asset URLs with base path (for GitHub Pages)
+const assetUrl = (path) => {
+  const base = import.meta.env.BASE_URL || "/";
+  if (!path) return path;
+  // Remove leading slash if present, then prepend base
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  return `${base}${cleanPath}`;
+};
+
 // ============================================
 // MAIN APP COMPONENT
 // ============================================
@@ -250,18 +259,18 @@ function App() {
   const roundConfig = ROUND_CONFIG[currentRound - 1] || ROUND_CONFIG[0];
   const isShaking = clockMs < shakeUntil;
 
-  // Build role map from manifest
+  // Build role map from manifest (with base URL applied)
   const roleMap = useMemo(() => {
     const map = new Map();
     for (const entry of manifest.sprites || []) {
-      map.set(entry.role, entry.url);
+      map.set(entry.role, assetUrl(entry.url));
     }
     return map;
   }, [manifest]);
 
   // Build sprite URLs object
   const sprite = useMemo(() => {
-    const getRole = (role, fallback = "") => roleMap.get(role) || fallback;
+    const getRole = (role, fallback = "") => roleMap.get(role) || assetUrl(fallback);
     return {
       danceCleanFrames: [
         getRole("dance_clean_01", "/assets/sprites/dance/dexter_dance_01.png"),
@@ -292,11 +301,11 @@ function App() {
   }, [roleMap]);
 
   const backgroundVideos = useMemo(
-    () => (manifest.backgrounds?.mp4 || []).map((video) => video.url),
+    () => (manifest.backgrounds?.mp4 || []).map((video) => assetUrl(video.url)),
     [manifest]
   );
   const fallbackPngs = useMemo(
-    () => (manifest.backgrounds?.pngFallback || []).map((frame) => frame.url),
+    () => (manifest.backgrounds?.pngFallback || []).map((frame) => assetUrl(frame.url)),
     [manifest]
   );
 
@@ -332,7 +341,7 @@ function App() {
     const loadManifest = async () => {
       try {
         setLoadingProgress(10);
-        const response = await fetch("/assets/manifest.json", { cache: "no-store" });
+        const response = await fetch(assetUrl("/assets/manifest.json"), { cache: "no-store" });
         if (!response.ok) throw new Error("manifest fetch failed");
         setLoadingProgress(30);
         const data = await response.json();
@@ -340,7 +349,7 @@ function App() {
         setLoadingProgress(50);
 
         // Preload critical sprites
-        const criticalImages = (data.sprites || []).slice(0, 8).map((s) => s.url).filter(Boolean);
+        const criticalImages = (data.sprites || []).slice(0, 8).map((s) => assetUrl(s.url)).filter(Boolean);
         let loaded = 0;
         await Promise.all(
           criticalImages.map(
@@ -896,7 +905,7 @@ function App() {
   const startMusicIfNeeded = useCallback(async () => {
     const state = musicRef.current;
     if (state.started) return;
-    const tracks = (manifestRef.current.music || []).map((track) => track.url);
+    const tracks = (manifestRef.current.music || []).map((track) => assetUrl(track.url));
     if (tracks.length === 0) return;
 
     const players = initializeAudioPlayers();
@@ -919,7 +928,7 @@ function App() {
     const state = musicRef.current;
     if (!state.started || !state.players) return;
     
-    const tracks = (manifestRef.current.music || []).map((track) => track.url);
+    const tracks = (manifestRef.current.music || []).map((track) => assetUrl(track.url));
     if (tracks.length <= 1) return;
     
     // Use different track for each round (cycling through available tracks)
