@@ -355,6 +355,33 @@ body,
 }
 
 /* ============================================
+   TOUCH RIPPLES
+   ============================================ */
+.touch-ripple {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+  margin-top: -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+  border: 2px solid rgba(255,255,255,0.5);
+  animation: rippleExpand 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleExpand {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ============================================
    UI LAYER
    ============================================ */
 .ui-layer {
@@ -435,6 +462,24 @@ body,
   font-weight: 800;
   font-size: 0.85rem;
   color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.combo-badge {
+  background: linear-gradient(135deg, #ff6b35, #f7c531);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  animation: comboPulse 0.5s ease-out;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+@keyframes comboPulse {
+  0% { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
 /* ============================================
@@ -599,10 +644,12 @@ body,
 
 .victory-quote {
   position: absolute;
-  top: 26vh;
+  top: 38vh;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
+  width: 90vw;
+  text-align: center;
   color: #fff3cf;
   text-shadow: 0 2px 0 rgba(30, 17, 5, 0.42);
   font-weight: 900;

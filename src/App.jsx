@@ -86,6 +86,16 @@ const SHARK_HIT_LINES = [
   "That one got ya!",
   "Ouch! Shark attack!",
 ];
+const CONGRATULATIONS_LINES = [
+  "Fantastic round!",
+  "You're on fire!",
+  "Birthday champion!",
+  "Party beast mode!",
+  "Unstoppable!",
+  "Round complete!",
+  "Dancing machine!",
+  "Weasel approved!",
+];
 
 // ============================================
 // FALLBACK MANIFEST
@@ -227,6 +237,13 @@ function App() {
   const [showDebug, setShowDebug] = useState(false);
   const [lastAction, setLastAction] = useState({ lane: null, time: 0, result: "none" });
 
+  // Combo system
+  const [combo, setCombo] = useState(0);
+  const [bestCombo, setBestCombo] = useState(0);
+
+  // Touch ripples (visual feedback)
+  const [touchRipples, setTouchRipples] = useState([]);
+
   // ============================================
   // COMPUTED VALUES
   // ============================================
@@ -269,6 +286,7 @@ function App() {
         getRole("dexter_excited", "/assets/sprites/poses/dexter_excited.png"),
         getRole("dexter_proud", "/assets/sprites/poses/dexter_proud.png"),
         getRole("dexter_focused", "/assets/sprites/poses/dexter_focused.png"),
+        getRole("dexter_neutral", "/assets/sprites/poses/dexter_neutral.png"),
       ],
     };
   }, [roleMap]);
@@ -425,6 +443,7 @@ function App() {
     setPerfectPops((current) => current.filter((entry) => clockMs - entry.spawnedAt < 360));
     setSparkles((current) => current.filter((entry) => clockMs - entry.spawnedAt < 900));
     setHitParticles((current) => current.filter((p) => clockMs - p.spawnedAt < 500));
+    setTouchRipples((current) => current.filter((r) => clockMs - r.spawnMs < 400));
   }, [clockMs]);
 
   useEffect(() => {
@@ -524,14 +543,40 @@ function App() {
       // Trigger collection effects (use setTimeout to avoid setState during render)
       if (collected && collectedItem) {
         setTimeout(() => {
-          setPartyMeter((v) => clamp(v + 8, 0, 100));
-          setFeedback(choice(SUCCESS_LINES));
+          // Calculate if this was a "perfect" timing (item in center of catch zone)
+          const progress = (clockMs - collectedItem.spawnMs) / roundConfig.fallMs;
+          const y = -15 + progress * 102;
+          const catchZoneCenter = (COLLECT_ZONE_TOP + COLLECT_ZONE_BOTTOM) / 2;
+          const isPerfect = Math.abs(y - catchZoneCenter) < 8;
+          
+          // Base points + perfect bonus
+          const basePoints = 8;
+          const perfectBonus = isPerfect ? 4 : 0;
+          const totalPoints = basePoints + perfectBonus;
+          
+          setPartyMeter((v) => clamp(v + totalPoints, 0, 100));
+          
+          // Update combo
+          setCombo((c) => {
+            const newCombo = c + 1;
+            setBestCombo((best) => Math.max(best, newCombo));
+            return newCombo;
+          });
+          
+          // Perfect timing feedback
+          if (isPerfect) {
+            setFeedback("PERFECT! +" + totalPoints);
+            vibrate([30, 20, 30]); // Double tap pattern for perfect
+          } else {
+            setFeedback(choice(SUCCESS_LINES));
+            vibrate(40);
+          }
+          
           setLastAction({ lane: collectedItem.lane, time: clockMs, result: "collect" });
-          setCelebrationPoseIndex(Math.floor(Math.random() * 4));
+          setCelebrationPoseIndex(Math.floor(Math.random() * 5)); // 5 poses available
           setCelebrationUntil(clockMs + 500);
           triggerMeterBump();
-          spawnHitParticles(LANE_X[collectedItem.lane], true);
-          vibrate(40);
+          spawnHitParticles(LANE_X[collectedItem.lane], isPerfect);
         }, 0);
       }
 
@@ -604,7 +649,8 @@ function App() {
           setHitReactionAt(clockMs);
           setShakeUntil(clockMs + HIT_REACTION_MS);
           setLastAction({ lane: "hit", time: clockMs, result: "sharkHit" });
-          vibrate([100, 50, 100]);
+          setCombo(0); // Reset combo on shark hit
+          vibrate([100, 50, 100]); // Strong buzz for impact
         }, 0);
       }
 
@@ -648,7 +694,8 @@ function App() {
     if (partyMeter >= 100) {
       if (currentRound < 3) {
         // Advance to next round - show congratulations then quote
-        setInterstitialQuote("Congratulations! " + getNextQuote());
+        const congrats = CONGRATULATIONS_LINES[Math.floor(Math.random() * CONGRATULATIONS_LINES.length)];
+        setInterstitialQuote(congrats + " " + getNextQuote());
         setInterstitialType("complete");
         setPhase(PHASE_INTERSTITIAL);
         setItems([]);
@@ -1013,6 +1060,7 @@ function App() {
     // Actually start gameplay for current/next round
     roundStartRef.current = clockRef.current;
     setPartyMeter(0); // Reset meter for new round
+    setCombo(0); // Reset combo for new round
     setItems([]);
     setSharks([]);
     beatCountRef.current = 0;
@@ -1050,9 +1098,12 @@ function App() {
     setPerfectPops([]);
     setSparkles([]);
     setHitParticles([]);
+    setTouchRipples([]);
     setMeterBump(false);
     setInterstitialQuote("");
     setInterstitialType("start");
+    setCombo(0);
+    setBestCombo(0);
     setLastAction({ lane: null, time: 0, result: "none" });
     beatCountRef.current = 0;
     nextBeatRef.current = 0;
@@ -1082,7 +1133,12 @@ function App() {
   const handlePointerDown = useCallback((event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
     const lane = x < 33 ? "left" : x > 66 ? "right" : "center";
+
+    // Spawn touch ripple for visual feedback
+    const rippleId = idRef.current();
+    setTouchRipples((prev) => [...prev.slice(-5), { id: rippleId, x, y, spawnMs: clockRef.current }]);
 
     switch (phase) {
       case PHASE_TITLE:
@@ -1271,6 +1327,15 @@ function App() {
             <img key={entry.id} className="perfect-pop" src={sprite.perfectPop} alt="Perfect" />
           ))}
 
+          {/* Touch ripples */}
+          {touchRipples.map((ripple) => (
+            <span
+              key={ripple.id}
+              className="touch-ripple"
+              style={{ left: `${ripple.x}%`, top: `${ripple.y}%` }}
+            />
+          ))}
+
           {/* Sparkle effects */}
           {sparkles.map((entry) => (
             <span
@@ -1355,7 +1420,10 @@ function App() {
 
         {/* Round indicator */}
         {phase === PHASE_RHYTHM && (
-          <div className="round-indicator">Round {currentRound}/3</div>
+          <div className="round-indicator">
+            Round {currentRound}/3
+            {combo >= 3 && <span className="combo-badge">🔥 {combo}x</span>}
+          </div>
         )}
 
         {/* Feedback text */}
