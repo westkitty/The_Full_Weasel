@@ -33,7 +33,7 @@ A birthday-themed rhythm game PWA where you help Dexter catch delicious treats a
 ## Installation
 
 ### Option A: Play Online
-Visit the hosted version (coming soon) and tap **Add to Home Screen** when prompted.
+**[Play The Full Weasel](https://westkitty.github.io/The_Full_Weasel/)** — tap **Add to Home Screen** when prompted to install as a PWA.
 
 ### Option B: Run Locally
 
