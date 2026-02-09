@@ -645,9 +645,9 @@ body,
 .victory-quote {
   position: absolute;
   top: 38vh;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   width: 90vw;
   text-align: center;
   color: #fff3cf;
