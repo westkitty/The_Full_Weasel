@@ -1042,6 +1042,17 @@ body,
   color: var(--ink);
 }
 
+.loading-content .loading-percent {
+  font-size: 1.2rem;
+}
+
+.loading-content .loading-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
 /* ============================================
    KEYFRAME ANIMATIONS
    ============================================ */

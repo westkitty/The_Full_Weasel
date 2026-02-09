@@ -216,6 +216,7 @@ function App() {
   const [pngPrevIndex, setPngPrevIndex] = useState(0);
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingStatus, setLoadingStatus] = useState("Starting...");
   const [hitParticles, setHitParticles] = useState([]);
   const [meterBump, setMeterBump] = useState(false);
   const [beatPulse, setBeatPulse] = useState(false);
@@ -340,25 +341,35 @@ function App() {
   useEffect(() => {
     const loadManifest = async () => {
       try {
-        setLoadingProgress(10);
+        setLoadingStatus("Fetching manifest...");
+        setLoadingProgress(5);
         const response = await fetch(assetUrl("/assets/manifest.json"), { cache: "no-store" });
         if (!response.ok) throw new Error("manifest fetch failed");
-        setLoadingProgress(30);
+        setLoadingProgress(10);
         const data = await response.json();
         setManifest(data);
-        setLoadingProgress(50);
 
-        // Preload critical sprites
-        const criticalImages = (data.sprites || []).slice(0, 8).map((s) => assetUrl(s.url)).filter(Boolean);
+        // Collect ALL images to preload
+        const allImages = [
+          ...(data.sprites || []).map((s) => assetUrl(s.url)),
+          ...(data.backgrounds?.pngFallback || []).map((f) => assetUrl(f.url)),
+        ].filter(Boolean);
+
+        // Preload all images with progress tracking
+        setLoadingStatus(`Loading sprites (0/${allImages.length})...`);
         let loaded = 0;
+        const total = allImages.length;
+        
         await Promise.all(
-          criticalImages.map(
+          allImages.map(
             (url) =>
               new Promise((resolve) => {
                 const img = new Image();
                 img.onload = img.onerror = () => {
                   loaded++;
-                  setLoadingProgress(50 + Math.round((loaded / criticalImages.length) * 40));
+                  // Progress from 10% to 85%
+                  setLoadingProgress(10 + Math.round((loaded / total) * 75));
+                  setLoadingStatus(`Loading sprites (${loaded}/${total})...`);
                   resolve();
                 };
                 img.src = url;
@@ -366,8 +377,25 @@ function App() {
           )
         );
 
+        // Preload first background video (if available)
+        const videos = data.backgrounds?.mp4 || [];
+        if (videos.length > 0) {
+          setLoadingStatus("Loading background video...");
+          setLoadingProgress(90);
+          const firstVideo = assetUrl(videos[0].url);
+          await new Promise((resolve) => {
+            const video = document.createElement("video");
+            video.preload = "auto";
+            video.oncanplaythrough = resolve;
+            video.onerror = resolve;
+            setTimeout(resolve, 3000); // Timeout after 3s
+            video.src = firstVideo;
+          });
+        }
+
+        setLoadingStatus("Ready!");
         setLoadingProgress(100);
-        setTimeout(() => setAssetsLoaded(true), 300);
+        setTimeout(() => setAssetsLoaded(true), 200);
       } catch {
         setAssetsLoaded(true); // Continue with fallback
       }
@@ -1525,7 +1553,8 @@ function App() {
                 <div className="loading-bar">
                   <div className="loading-fill" style={{ width: `${loadingProgress}%` }} />
                 </div>
-                <p>{loadingProgress}%</p>
+                <p className="loading-percent">{loadingProgress}%</p>
+                <p className="loading-status">{loadingStatus}</p>
               </div>
             </div>
           ) : (
