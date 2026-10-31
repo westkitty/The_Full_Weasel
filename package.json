@@ -9,6 +9,7 @@
     "optimize-media": "node scripts/optimize-media.mjs",
     "dev": "npm run prepare-assets && vite",
     "build": "npm run prepare-assets && vite build",
+    "build:embed": "npm run prepare-assets && node scripts/build-embed.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -19,6 +19,10 @@ preserving gameplay, offline-bundled assets, music behavior and original media.
 - `npm run optimize-media` reproduces derivatives when ImageMagick and FFmpeg
   are installed. `npm test` verifies manifest provenance, WebP structure,
   smaller derivatives and faststart placement.
+- `npm run build:embed` creates a portable `dist-embed/` for the Museum with a
+  relative base, file-local manifest support, no root PWA worker or remote font
+  request, and Escape-to-parent lifecycle signaling. The command verifies these
+  invariants before succeeding.
 
 ## Matched cloud evidence
 

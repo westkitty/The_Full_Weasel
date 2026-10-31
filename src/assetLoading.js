@@ -42,3 +42,28 @@ export function preloadImages(urls, ImageConstructor = Image) {
     image.src = url;
   })));
 }
+
+export async function loadJsonDocument(url, options = {}) {
+  const protocol = options.protocol ?? globalThis.location?.protocol;
+  if (protocol === 'file:') {
+    const request = (options.xhrFactory ?? (() => new XMLHttpRequest()))();
+    return new Promise((resolve, reject) => {
+      request.open('GET', url, true);
+      request.responseType = 'json';
+      request.onload = () => {
+        if (request.status === 0 || (request.status >= 200 && request.status < 300)) {
+          resolve(request.response);
+        } else {
+          reject(new Error(`manifest request failed (${request.status})`));
+        }
+      };
+      request.onerror = () => reject(new Error('manifest request failed'));
+      request.send();
+    });
+  }
+
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const response = await fetchImpl(url, { cache: 'no-store' });
+  if (!response.ok) throw new Error('manifest fetch failed');
+  return response.json();
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { gameplayImageUrls, initialImageUrls, preloadImages } from "./assetLoading.js";
+import { gameplayImageUrls, initialImageUrls, loadJsonDocument, preloadImages } from "./assetLoading.js";
 
 // ============================================
 // PHASE CONSTANTS
@@ -346,10 +346,8 @@ function App() {
       try {
         setLoadingStatus("Fetching manifest...");
         setLoadingProgress(5);
-        const response = await fetch(assetUrl("/assets/manifest.json"), { cache: "no-store" });
-        if (!response.ok) throw new Error("manifest fetch failed");
         setLoadingProgress(10);
-        const data = await response.json();
+        const data = await loadJsonDocument(assetUrl("/assets/manifest.json"));
         setManifest(data);
 
         const initialImages = initialImageUrls(data).map(assetUrl);
