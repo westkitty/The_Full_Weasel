@@ -282,6 +282,35 @@ async function copyWithStats(sourceRel, destinationRel, role, reason) {
   };
 }
 
+async function copyPreferredAsset({
+  sourceRel,
+  destinationRel,
+  optimizedRel,
+  optimizedDestinationRel,
+  role,
+  reason,
+}) {
+  const sourceStat = await fs.stat(path.join(root, sourceRel));
+  let selectedSource = sourceRel;
+  let selectedDestination = destinationRel;
+  if (process.env.FULL_WEASEL_SOURCE_ASSETS !== "1") {
+    try {
+      await fs.access(path.join(root, optimizedRel));
+      selectedSource = optimizedRel;
+      selectedDestination = optimizedDestinationRel;
+    } catch {
+      // The governed original remains the fallback when no derivative exists.
+    }
+  }
+  const copied = await copyWithStats(selectedSource, selectedDestination, role, reason);
+  return {
+    ...copied,
+    source: sourceRel,
+    sourceSizeBytes: sourceStat.size,
+    optimizedSource: selectedSource === sourceRel ? null : selectedSource,
+  };
+}
+
 function pickEvenlySpaced(sortedItems, targetCount) {
   if (sortedItems.length <= targetCount) {
     return [...sortedItems];
@@ -384,12 +413,16 @@ async function main() {
 
   const sprites = [];
   for (const definition of spriteDefinitions) {
-    const copied = await copyWithStats(
-      definition.sourceRel,
-      definition.destinationRel,
-      definition.role,
-      definition.reason
-    );
+    const webpDestination = definition.destinationRel.replace(/\.png$/i, ".webp");
+    const optimizedRel = `assets_optimized/${webpDestination.replace(/^assets\//, "")}`;
+    const copied = await copyPreferredAsset({
+      sourceRel: definition.sourceRel,
+      destinationRel: definition.destinationRel,
+      optimizedRel,
+      optimizedDestinationRel: webpDestination,
+      role: definition.role,
+      reason: definition.reason,
+    });
     sprites.push(copied);
     chosenAssetSourceSet.add(definition.sourceRel);
   }
@@ -405,12 +438,14 @@ async function main() {
   const backgrounds = [];
   for (const name of mp4Files) {
     const sourceRel = `assets_backgrounds/${name}`;
-    const copied = await copyWithStats(
+    const copied = await copyPreferredAsset({
       sourceRel,
-      `assets/backgrounds/${name}`,
-      "background_mp4",
-      "Primary animated background loop."
-    );
+      destinationRel: `assets/backgrounds/${name}`,
+      optimizedRel: `assets_optimized/backgrounds/${name}`,
+      optimizedDestinationRel: `assets/backgrounds/${name}`,
+      role: "background_mp4",
+      reason: "Primary animated background loop.",
+    });
     backgrounds.push({ ...copied, fallbackType: "mp4" });
     chosenAssetSourceSet.add(sourceRel);
   }
@@ -427,12 +462,15 @@ async function main() {
   const pngFallback = [];
   for (const name of selectedFallbackPngs) {
     const sourceRel = `assets_backgrounds/${name}`;
-    const copied = await copyWithStats(
+    const webpName = name.replace(/\.png$/i, ".webp");
+    const copied = await copyPreferredAsset({
       sourceRel,
-      `assets/backgrounds/${name}`,
-      "background_png_fallback",
-      "PNG fallback frame for devices where MP4 cannot play reliably."
-    );
+      destinationRel: `assets/backgrounds/${name}`,
+      optimizedRel: `assets_optimized/backgrounds/${webpName}`,
+      optimizedDestinationRel: `assets/backgrounds/${webpName}`,
+      role: "background_png_fallback",
+      reason: "Lossless fallback frame for devices where MP4 cannot play reliably.",
+    });
     pngFallback.push({ ...copied, fallbackType: "png" });
     chosenAssetSourceSet.add(sourceRel);
   }
@@ -473,37 +511,59 @@ async function main() {
   }
   chosenAssetSourceSet.add(iconSourceRel);
   const iconSourcePath = path.join(root, iconSourceRel);
-  let iconResult = await tryGenerateIconsWithSharp(iconSourcePath);
-  if (iconResult.degraded) {
-    const pillowResult = await tryGenerateIconsWithPillow(iconSourcePath);
-    if (!pillowResult.degraded) {
-      iconResult = pillowResult;
-    } else {
-      iconResult = await fallbackCopyIcons(iconSourcePath);
+  let iconResult;
+  if (process.env.FULL_WEASEL_SOURCE_ASSETS !== "1") {
+    try {
+      await fs.copyFile(path.join(root, "assets_optimized/icons/icon-192.png"), icon192Path);
+      await fs.copyFile(path.join(root, "assets_optimized/icons/icon-512.png"), icon512Path);
+      iconResult = {
+        method: "governed_derivative",
+        degraded: false,
+        note: "Copied reproducible governed icon derivatives.",
+      };
+    } catch {
+      // First optimization run generates the governed derivatives below.
+    }
+  }
+  if (!iconResult) {
+    iconResult = await tryGenerateIconsWithSharp(iconSourcePath);
+    if (iconResult.degraded) {
+      const pillowResult = await tryGenerateIconsWithPillow(iconSourcePath);
+      if (!pillowResult.degraded) {
+        iconResult = pillowResult;
+      } else {
+        iconResult = await fallbackCopyIcons(iconSourcePath);
+      }
     }
   }
 
   const manifestPayload = {
     generatedAt: new Date().toISOString(),
-    sprites: sprites.map(({ role, url, sizeBytes, source, reason }) => ({
+    sprites: sprites.map(({ role, url, sizeBytes, sourceSizeBytes, source, optimizedSource, reason }) => ({
       role,
       url,
       sizeBytes,
+      sourceSizeBytes,
       source,
+      optimizedSource,
       reason,
     })),
     backgrounds: {
       strategy: "mp4-primary-with-auto-png-fallback",
-      mp4: backgrounds.map(({ url, sizeBytes, source, reason }) => ({
+      mp4: backgrounds.map(({ url, sizeBytes, sourceSizeBytes, source, optimizedSource, reason }) => ({
         url,
         sizeBytes,
+        sourceSizeBytes,
         source,
+        optimizedSource,
         reason,
       })),
-      pngFallback: pngFallback.map(({ url, sizeBytes, source, reason }) => ({
+      pngFallback: pngFallback.map(({ url, sizeBytes, sourceSizeBytes, source, optimizedSource, reason }) => ({
         url,
         sizeBytes,
+        sourceSizeBytes,
         source,
+        optimizedSource,
         reason,
       })),
     },

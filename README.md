@@ -72,6 +72,11 @@ git clone https://github.com/westkitty/The_Full_Weasel.git && cd The_Full_Weasel
 npm run build
 ```
 
+The build copies governed derivatives from `assets_optimized/`: lossless WebP
+images and H.264 `faststart` background loops. Originals remain in
+`assets_raw/` and `assets_backgrounds/`. Maintainers with ImageMagick and
+FFmpeg can regenerate the derivatives with `npm run optimize-media`.
+
 The optimized build will be output to the `dist/` folder, ready for deployment to any static hosting service (Netlify, Vercel, GitHub Pages, etc.).
 
 ## Installing as a PWA on Android

@@ -1,0 +1,431 @@
+{
+  "generatedAt": "2026-10-31T08:38:25.554Z",
+  "images": [
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_sheet_2x4.png",
+      "destination": "assets_optimized/sprites/dance/dex_dance_loop_sheet_2x4.webp",
+      "kept": true,
+      "sourceBytes": 2360746,
+      "optimizedBytes": 1645882,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_hat_sheet_2x4.png",
+      "destination": "assets_optimized/sprites/dance/dex_dance_hat_sheet_2x4.webp",
+      "kept": true,
+      "sourceBytes": 2331013,
+      "optimizedBytes": 1628024,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_sweater_sheet_2x4.png",
+      "destination": "assets_optimized/sprites/dance/dex_dance_sweater_sheet_2x4.webp",
+      "kept": true,
+      "sourceBytes": 1741862,
+      "optimizedBytes": 1211132,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_hat_sweater_sheet_2x4.png",
+      "destination": "assets_optimized/sprites/dance/dex_dance_hat_sweater_sheet_2x4.webp",
+      "kept": true,
+      "sourceBytes": 1712739,
+      "optimizedBytes": 1194328,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
+      "destination": "assets_optimized/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.webp",
+      "kept": true,
+      "sourceBytes": 1714547,
+      "optimizedBytes": 1194540,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_01.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_01.webp",
+      "kept": true,
+      "sourceBytes": 358765,
+      "optimizedBytes": 202490,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_02.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_02.webp",
+      "kept": true,
+      "sourceBytes": 364065,
+      "optimizedBytes": 216446,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_03.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_03.webp",
+      "kept": true,
+      "sourceBytes": 367910,
+      "optimizedBytes": 219288,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_04.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_04.webp",
+      "kept": true,
+      "sourceBytes": 363478,
+      "optimizedBytes": 210398,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_05.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_05.webp",
+      "kept": true,
+      "sourceBytes": 359406,
+      "optimizedBytes": 183316,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_06.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_06.webp",
+      "kept": true,
+      "sourceBytes": 364858,
+      "optimizedBytes": 208968,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_07.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_07.webp",
+      "kept": true,
+      "sourceBytes": 370937,
+      "optimizedBytes": 209452,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dance loop/dex_dance_loop_08.png",
+      "destination": "assets_optimized/sprites/dance/frames/dex_dance_loop_08.webp",
+      "kept": true,
+      "sourceBytes": 353484,
+      "optimizedBytes": 174454,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_dance_01.png",
+      "destination": "assets_optimized/sprites/dance/dexter_dance_01.webp",
+      "kept": true,
+      "sourceBytes": 186143,
+      "optimizedBytes": 124354,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_dance_02.png",
+      "destination": "assets_optimized/sprites/dance/dexter_dance_02.webp",
+      "kept": true,
+      "sourceBytes": 186571,
+      "optimizedBytes": 124738,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_dance_03.png",
+      "destination": "assets_optimized/sprites/dance/dexter_dance_03.webp",
+      "kept": true,
+      "sourceBytes": 186997,
+      "optimizedBytes": 124480,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/shark_hit/dex_hit_react_01.png",
+      "destination": "assets_optimized/sprites/hit/dex_hit_react_01.webp",
+      "kept": true,
+      "sourceBytes": 103385,
+      "optimizedBytes": 65694,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/shark_hit/dex_hit_react_02.png",
+      "destination": "assets_optimized/sprites/hit/dex_hit_react_02.webp",
+      "kept": true,
+      "sourceBytes": 111781,
+      "optimizedBytes": 74518,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/shark_hit/dex_hit_react_03.png",
+      "destination": "assets_optimized/sprites/hit/dex_hit_react_03.webp",
+      "kept": true,
+      "sourceBytes": 110983,
+      "optimizedBytes": 73044,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dex_perfect_pop.png",
+      "destination": "assets_optimized/sprites/ui/dex_perfect_pop.webp",
+      "kept": true,
+      "sourceBytes": 129042,
+      "optimizedBytes": 87806,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/shadow_blob.png",
+      "destination": "assets_optimized/sprites/ui/shadow_blob.webp",
+      "kept": true,
+      "sourceBytes": 12761,
+      "optimizedBytes": 7124,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/spotlight_vignette.png",
+      "destination": "assets_optimized/sprites/ui/spotlight_vignette.webp",
+      "kept": true,
+      "sourceBytes": 162662,
+      "optimizedBytes": 73630,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/censor_slam.png",
+      "destination": "assets_optimized/sprites/ui/censor_slam.webp",
+      "kept": true,
+      "sourceBytes": 17802,
+      "optimizedBytes": 6360,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/victory_subtext.png",
+      "destination": "assets_optimized/sprites/ui/victory_subtext.webp",
+      "kept": true,
+      "sourceBytes": 13296,
+      "optimizedBytes": 6458,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/Title_Screen.png",
+      "destination": "assets_optimized/sprites/ui/Title_Screen.webp",
+      "kept": true,
+      "sourceBytes": 7241904,
+      "optimizedBytes": 4691648,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/PWA_guide.png",
+      "destination": "assets_optimized/sprites/ui/PWA_guide.webp",
+      "kept": true,
+      "sourceBytes": 5854486,
+      "optimizedBytes": 3637408,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/Shark.png",
+      "destination": "assets_optimized/sprites/items/hazard_shark_fin.webp",
+      "kept": true,
+      "sourceBytes": 1647346,
+      "optimizedBytes": 471564,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/Cheese.png",
+      "destination": "assets_optimized/sprites/items/item_nana_cheese.webp",
+      "kept": true,
+      "sourceBytes": 1509348,
+      "optimizedBytes": 377280,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/Iced_Tea.png",
+      "destination": "assets_optimized/sprites/items/item_unsweetened_iced_tea.webp",
+      "kept": true,
+      "sourceBytes": 1554764,
+      "optimizedBytes": 367256,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/overlay_party_hat.png",
+      "destination": "assets_optimized/sprites/overlays/overlay_party_hat.webp",
+      "kept": true,
+      "sourceBytes": 37507,
+      "optimizedBytes": 27450,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/overlay_birthday_sweater.png",
+      "destination": "assets_optimized/sprites/overlays/overlay_birthday_sweater.webp",
+      "kept": true,
+      "sourceBytes": 108149,
+      "optimizedBytes": 80992,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/overlay_bowtie.png",
+      "destination": "assets_optimized/sprites/overlays/overlay_bowtie.webp",
+      "kept": true,
+      "sourceBytes": 14135,
+      "optimizedBytes": 10202,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_neutral.png",
+      "destination": "assets_optimized/sprites/poses/dexter_neutral.webp",
+      "kept": true,
+      "sourceBytes": 154533,
+      "optimizedBytes": 103088,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_focused.png",
+      "destination": "assets_optimized/sprites/poses/dexter_focused.webp",
+      "kept": true,
+      "sourceBytes": 182520,
+      "optimizedBytes": 122986,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_excited.png",
+      "destination": "assets_optimized/sprites/poses/dexter_excited.webp",
+      "kept": true,
+      "sourceBytes": 191055,
+      "optimizedBytes": 129308,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_joyful.png",
+      "destination": "assets_optimized/sprites/poses/dexter_joyful.webp",
+      "kept": true,
+      "sourceBytes": 181296,
+      "optimizedBytes": 122630,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_raw/dexter_proud.png",
+      "destination": "assets_optimized/sprites/poses/dexter_proud.webp",
+      "kept": true,
+      "sourceBytes": 206398,
+      "optimizedBytes": 140196,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582054016.png",
+      "destination": "assets_optimized/backgrounds/1770582054016.webp",
+      "kept": true,
+      "sourceBytes": 6333771,
+      "optimizedBytes": 4141610,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582057020.png",
+      "destination": "assets_optimized/backgrounds/1770582057020.webp",
+      "kept": true,
+      "sourceBytes": 6312052,
+      "optimizedBytes": 4031510,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582061308.png",
+      "destination": "assets_optimized/backgrounds/1770582061308.webp",
+      "kept": true,
+      "sourceBytes": 6967417,
+      "optimizedBytes": 4493090,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582074136.png",
+      "destination": "assets_optimized/backgrounds/1770582074136.webp",
+      "kept": true,
+      "sourceBytes": 5899045,
+      "optimizedBytes": 4044464,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582075405.png",
+      "destination": "assets_optimized/backgrounds/1770582075405.webp",
+      "kept": true,
+      "sourceBytes": 6440266,
+      "optimizedBytes": 4122604,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582078902.png",
+      "destination": "assets_optimized/backgrounds/1770582078902.webp",
+      "kept": true,
+      "sourceBytes": 5901303,
+      "optimizedBytes": 3994924,
+      "encoding": "lossless WebP"
+    },
+    {
+      "source": "assets_backgrounds/1770582089865.png",
+      "destination": "assets_optimized/backgrounds/1770582089865.webp",
+      "kept": true,
+      "sourceBytes": 6967519,
+      "optimizedBytes": 4493026,
+      "encoding": "lossless WebP"
+    }
+  ],
+  "videos": [
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-25-06.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-25-06.mp4",
+      "kept": true,
+      "sourceBytes": 7269290,
+      "optimizedBytes": 5026486,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-25-49.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-25-49.mp4",
+      "kept": true,
+      "sourceBytes": 8541468,
+      "optimizedBytes": 6010873,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-26-44.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-26-44.mp4",
+      "kept": true,
+      "sourceBytes": 4295004,
+      "optimizedBytes": 2725955,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-27-23.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-27-23.mp4",
+      "kept": true,
+      "sourceBytes": 4470852,
+      "optimizedBytes": 2871495,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-27-24.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-27-24.mp4",
+      "kept": true,
+      "sourceBytes": 4470852,
+      "optimizedBytes": 2871495,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-28-17.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-28-17.mp4",
+      "kept": true,
+      "sourceBytes": 1593466,
+      "optimizedBytes": 973190,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-30-04.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-30-04.mp4",
+      "kept": true,
+      "sourceBytes": 1840667,
+      "optimizedBytes": 1045289,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-31-03.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-31-03.mp4",
+      "kept": true,
+      "sourceBytes": 3759619,
+      "optimizedBytes": 2307096,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    },
+    {
+      "source": "assets_backgrounds/grok_video_2026-02-08-15-32-25.mp4",
+      "destination": "assets_optimized/backgrounds/grok_video_2026-02-08-15-32-25.mp4",
+      "kept": true,
+      "sourceBytes": 4224633,
+      "optimizedBytes": 2643024,
+      "encoding": "H.264 CRF 23 slow + faststart"
+    }
+  ]
+}
