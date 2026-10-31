@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "prepare-assets": "node scripts/prepare-assets.mjs",
+    "test": "node --test src/*.test.js scripts/*.test.mjs",
+    "optimize-media": "node scripts/optimize-media.mjs",
     "dev": "npm run prepare-assets && vite",
     "build": "npm run prepare-assets && vite build",
+    "build:embed": "npm run prepare-assets && node scripts/build-embed.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

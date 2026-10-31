@@ -1,4 +1,4 @@
-const CACHE_NAME = "full-weasel-v2";
+const CACHE_NAME = "full-weasel-v3";
 const CORE_PRECACHE = ["/", "/index.html", "/manifest.webmanifest", "/assets/manifest.json"];
 
 self.addEventListener("install", (event) => {

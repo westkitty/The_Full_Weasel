@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { gameplayImageUrls, initialImageUrls, loadJsonDocument, preloadImages } from "./assetLoading.js";
 
 // ============================================
 // PHASE CONSTANTS
@@ -102,10 +103,10 @@ const CONGRATULATIONS_LINES = [
 // ============================================
 const FALLBACK_MANIFEST = {
   sprites: [
-    { role: "dance_clean_01", url: "/assets/sprites/dance/dexter_dance_01.png" },
-    { role: "dance_clean_02", url: "/assets/sprites/dance/dexter_dance_02.png" },
-    { role: "dance_clean_03", url: "/assets/sprites/dance/dexter_dance_03.png" },
-    { role: "title_screen", url: "/assets/sprites/ui/Title_Screen.png" },
+    { role: "dance_clean_01", url: "/assets/sprites/dance/dexter_dance_01.webp" },
+    { role: "dance_clean_02", url: "/assets/sprites/dance/dexter_dance_02.webp" },
+    { role: "dance_clean_03", url: "/assets/sprites/dance/dexter_dance_03.webp" },
+    { role: "title_screen", url: "/assets/sprites/ui/Title_Screen.webp" },
   ],
   backgrounds: { mp4: [], pngFallback: [] },
   music: [],
@@ -215,6 +216,7 @@ function App() {
   const [pngIndex, setPngIndex] = useState(0);
   const [pngPrevIndex, setPngPrevIndex] = useState(0);
   const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [gameplayAssetsReady, setGameplayAssetsReady] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingStatus, setLoadingStatus] = useState("Starting...");
   const [hitParticles, setHitParticles] = useState([]);
@@ -259,6 +261,7 @@ function App() {
   // ============================================
   const roundConfig = ROUND_CONFIG[currentRound - 1] || ROUND_CONFIG[0];
   const isShaking = clockMs < shakeUntil;
+  const gameplayLoadingEnabled = assetsLoaded && phase !== PHASE_TITLE;
 
   // Build role map from manifest (with base URL applied)
   const roleMap = useMemo(() => {
@@ -274,29 +277,29 @@ function App() {
     const getRole = (role, fallback = "") => roleMap.get(role) || assetUrl(fallback);
     return {
       danceCleanFrames: [
-        getRole("dance_clean_01", "/assets/sprites/dance/dexter_dance_01.png"),
-        getRole("dance_clean_02", "/assets/sprites/dance/dexter_dance_02.png"),
-        getRole("dance_clean_03", "/assets/sprites/dance/dexter_dance_03.png"),
+        getRole("dance_clean_01", "/assets/sprites/dance/dexter_dance_01.webp"),
+        getRole("dance_clean_02", "/assets/sprites/dance/dexter_dance_02.webp"),
+        getRole("dance_clean_03", "/assets/sprites/dance/dexter_dance_03.webp"),
       ].filter(Boolean),
       hitFrames: [
-        getRole("hit_react_01", "/assets/sprites/hit/dex_hit_react_01.png"),
-        getRole("hit_react_02", "/assets/sprites/hit/dex_hit_react_02.png"),
-        getRole("hit_react_03", "/assets/sprites/hit/dex_hit_react_03.png"),
+        getRole("hit_react_01", "/assets/sprites/hit/dex_hit_react_01.webp"),
+        getRole("hit_react_02", "/assets/sprites/hit/dex_hit_react_02.webp"),
+        getRole("hit_react_03", "/assets/sprites/hit/dex_hit_react_03.webp"),
       ],
-      perfectPop: getRole("perfect_pop", "/assets/sprites/ui/dex_perfect_pop.png"),
-      shadowBlob: getRole("shadow_blob", "/assets/sprites/ui/shadow_blob.png"),
-      spotlight: getRole("spotlight_vignette", "/assets/sprites/ui/spotlight_vignette.png"),
-      censorSlam: getRole("censor_slam", "/assets/sprites/ui/censor_slam.png"),
-      sharkFin: getRole("hazard_shark_fin", "/assets/sprites/items/hazard_shark_fin.png"),
-      nanaCheese: getRole("item_nana_cheese", "/assets/sprites/items/item_nana_cheese.png"),
-      icedTea: getRole("item_unsweetened_iced_tea", "/assets/sprites/items/item_unsweetened_iced_tea.png"),
+      perfectPop: getRole("perfect_pop", "/assets/sprites/ui/dex_perfect_pop.webp"),
+      shadowBlob: getRole("shadow_blob", "/assets/sprites/ui/shadow_blob.webp"),
+      spotlight: getRole("spotlight_vignette", "/assets/sprites/ui/spotlight_vignette.webp"),
+      censorSlam: getRole("censor_slam", "/assets/sprites/ui/censor_slam.webp"),
+      sharkFin: getRole("hazard_shark_fin", "/assets/sprites/items/hazard_shark_fin.webp"),
+      nanaCheese: getRole("item_nana_cheese", "/assets/sprites/items/item_nana_cheese.webp"),
+      icedTea: getRole("item_unsweetened_iced_tea", "/assets/sprites/items/item_unsweetened_iced_tea.webp"),
       titleScreen: getRole("title_screen", ""),
       celebrationPoses: [
-        getRole("dexter_joyful", "/assets/sprites/poses/dexter_joyful.png"),
-        getRole("dexter_excited", "/assets/sprites/poses/dexter_excited.png"),
-        getRole("dexter_proud", "/assets/sprites/poses/dexter_proud.png"),
-        getRole("dexter_focused", "/assets/sprites/poses/dexter_focused.png"),
-        getRole("dexter_neutral", "/assets/sprites/poses/dexter_neutral.png"),
+        getRole("dexter_joyful", "/assets/sprites/poses/dexter_joyful.webp"),
+        getRole("dexter_excited", "/assets/sprites/poses/dexter_excited.webp"),
+        getRole("dexter_proud", "/assets/sprites/poses/dexter_proud.webp"),
+        getRole("dexter_focused", "/assets/sprites/poses/dexter_focused.webp"),
+        getRole("dexter_neutral", "/assets/sprites/poses/dexter_neutral.webp"),
       ],
     };
   }, [roleMap]);
@@ -343,55 +346,14 @@ function App() {
       try {
         setLoadingStatus("Fetching manifest...");
         setLoadingProgress(5);
-        const response = await fetch(assetUrl("/assets/manifest.json"), { cache: "no-store" });
-        if (!response.ok) throw new Error("manifest fetch failed");
         setLoadingProgress(10);
-        const data = await response.json();
+        const data = await loadJsonDocument(assetUrl("/assets/manifest.json"));
         setManifest(data);
 
-        // Collect ALL images to preload
-        const allImages = [
-          ...(data.sprites || []).map((s) => assetUrl(s.url)),
-          ...(data.backgrounds?.pngFallback || []).map((f) => assetUrl(f.url)),
-        ].filter(Boolean);
-
-        // Preload all images with progress tracking
-        setLoadingStatus(`Loading sprites (0/${allImages.length})...`);
-        let loaded = 0;
-        const total = allImages.length;
-        
-        await Promise.all(
-          allImages.map(
-            (url) =>
-              new Promise((resolve) => {
-                const img = new Image();
-                img.onload = img.onerror = () => {
-                  loaded++;
-                  // Progress from 10% to 85%
-                  setLoadingProgress(10 + Math.round((loaded / total) * 75));
-                  setLoadingStatus(`Loading sprites (${loaded}/${total})...`);
-                  resolve();
-                };
-                img.src = url;
-              })
-          )
-        );
-
-        // Preload first background video (if available)
-        const videos = data.backgrounds?.mp4 || [];
-        if (videos.length > 0) {
-          setLoadingStatus("Loading background video...");
-          setLoadingProgress(90);
-          const firstVideo = assetUrl(videos[0].url);
-          await new Promise((resolve) => {
-            const video = document.createElement("video");
-            video.preload = "auto";
-            video.oncanplaythrough = resolve;
-            video.onerror = resolve;
-            setTimeout(resolve, 3000); // Timeout after 3s
-            video.src = firstVideo;
-          });
-        }
+        const initialImages = initialImageUrls(data).map(assetUrl);
+        setLoadingStatus("Loading title art...");
+        setLoadingProgress(40);
+        await preloadImages(initialImages);
 
         setLoadingStatus("Ready!");
         setLoadingProgress(100);
@@ -402,6 +364,19 @@ function App() {
     };
     loadManifest();
   }, []);
+
+  // The two instruction screens are a predictive loading window. Only art
+  // used by the actual game is fetched; packaged source sheets remain available
+  // offline without competing with first interaction.
+  useEffect(() => {
+    if (!gameplayLoadingEnabled || gameplayAssetsReady) return;
+    let cancelled = false;
+    const urls = gameplayImageUrls(manifest).map(assetUrl);
+    void preloadImages(urls).then(() => {
+      if (!cancelled) setGameplayAssetsReady(true);
+    });
+    return () => { cancelled = true; };
+  }, [gameplayAssetsReady, gameplayLoadingEnabled, manifest]);
 
   // ============================================
   // DEBUG WINDOW HOOKS
@@ -851,6 +826,11 @@ function App() {
   useEffect(() => {
     let cancelled = false;
 
+    if (!gameplayLoadingEnabled) {
+      setBackgroundMode("loading");
+      return () => { cancelled = true; };
+    }
+
     const probeVideo = (url) =>
       new Promise((resolve) => {
         const video = document.createElement("video");
@@ -860,7 +840,7 @@ function App() {
         video.muted = true;
         video.playsInline = true;
         video.preload = "metadata";
-        video.addEventListener("canplaythrough", () => { clearTimeout(timeout); finish(true); });
+        video.addEventListener("loadedmetadata", () => { clearTimeout(timeout); finish(true); });
         video.addEventListener("error", () => { clearTimeout(timeout); finish(false); });
         video.src = url;
         video.load();
@@ -887,7 +867,7 @@ function App() {
     setBackgroundMode("loading");
     chooseBackground();
     return () => { cancelled = true; };
-  }, [backgroundVideos]);
+  }, [backgroundVideos, gameplayLoadingEnabled]);
 
   useEffect(() => {
     if (backgroundMode !== "png" || fallbackPngs.length === 0) return;
@@ -1185,7 +1165,7 @@ function App() {
         goToReady();
         break;
       case PHASE_READY:
-        startGame();
+        if (gameplayAssetsReady) startGame();
         break;
       case PHASE_RHYTHM:
         if (lane === "center") {
@@ -1210,12 +1190,12 @@ function App() {
       default:
         break;
     }
-  }, [phase, goToHowTo, goToReady, startGame, handleJump, startNextRound, handleStripTap]);
+  }, [phase, gameplayAssetsReady, goToHowTo, goToReady, startGame, handleJump, startNextRound, handleStripTap]);
 
   // ============================================
   // RENDER COMPUTATIONS
   // ============================================
-  const danceFrames = sprite.danceCleanFrames.length ? sprite.danceCleanFrames : ["/assets/sprites/dance/dexter_dance_01.png"];
+  const danceFrames = sprite.danceCleanFrames.length ? sprite.danceCleanFrames : ["/assets/sprites/dance/dexter_dance_01.webp"];
   const danceFps = phase === PHASE_VICTORY || phase === PHASE_END ? 8 : 11;
   const danceFrameIndex = Math.floor((clockMs / 1000) * danceFps) % Math.max(1, danceFrames.length);
 
@@ -1254,6 +1234,8 @@ function App() {
 
       {/* Background layer */}
       <section className="background-layer" aria-hidden="true">
+        {phase !== PHASE_TITLE ? (
+          <>
         {backgroundMode === "video" && activeVideo ? (
           <video
             className="background-video"
@@ -1268,15 +1250,18 @@ function App() {
             }}
           />
         ) : null}
-        {(backgroundMode === "png" || backgroundMode === "loading") && fallbackPngs.length > 0 ? (
+        {backgroundMode === "png" && fallbackPngs.length > 0 ? (
           <>
             <img className="background-png previous" src={previousPng} alt="" />
             <img key={`${currentPng}-${pngIndex}`} className="background-png current" src={currentPng} alt="" />
           </>
         ) : null}
+          </>
+        ) : null}
       </section>
 
       {/* Stage layer (Dexter, items, sharks) - applies zoom transform */}
+      {phase !== PHASE_TITLE ? (
       <section className="stage-layer" style={{ transform: getZoomTransform(), transformOrigin: "center 60%" }}>
         {/* Lane indicators at top */}
         {phase === PHASE_RHYTHM && (
@@ -1431,14 +1416,17 @@ function App() {
           )}
         </div>
       </section>
+      ) : null}
 
       {/* Spotlight vignette overlay */}
+      {phase !== PHASE_TITLE ? (
       <img
         className="spotlight-overlay"
         src={sprite.spotlight}
         alt=""
         style={{ opacity: spotlightOpacity }}
       />
+      ) : null}
 
       {/* UI Layer */}
       <section className="ui-layer">
@@ -1588,7 +1576,7 @@ function App() {
           <div className="ready-panel">
             <h1>🎂</h1>
             <h2>Ready?</h2>
-            <p className="tap-hint pulse">TAP TO START</p>
+            <p className="tap-hint pulse">{gameplayAssetsReady ? "TAP TO START" : "PREPARING THE PARTY…"}</p>
           </div>
         </section>
       )}

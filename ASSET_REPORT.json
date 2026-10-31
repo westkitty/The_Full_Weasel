@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-09T00:31:57.538Z",
+  "generatedAt": "2026-10-31T08:42:50.424Z",
   "toolchain": {
     "detected": "vite (created in this run because no existing package.json toolchain was present)",
     "buildOutput": "dist"
@@ -9,298 +9,372 @@
       {
         "role": "dance_base",
         "source": "assets_raw/dance loop/dex_dance_loop_sheet_2x4.png",
-        "destination": "public/assets/sprites/dance/dex_dance_loop_sheet_2x4.png",
-        "url": "/assets/sprites/dance/dex_dance_loop_sheet_2x4.png",
-        "sizeBytes": 2360746,
-        "reason": "Core 8-frame dance loop used during gameplay and victory."
+        "destination": "public/assets/sprites/dance/dex_dance_loop_sheet_2x4.webp",
+        "url": "/assets/sprites/dance/dex_dance_loop_sheet_2x4.webp",
+        "sizeBytes": 1645882,
+        "reason": "Core 8-frame dance loop used during gameplay and victory.",
+        "sourceSizeBytes": 2360746,
+        "optimizedSource": "assets_optimized/sprites/dance/dex_dance_loop_sheet_2x4.webp"
       },
       {
         "role": "dance_hat",
         "source": "assets_raw/dance loop/dex_dance_hat_sheet_2x4.png",
-        "destination": "public/assets/sprites/dance/dex_dance_hat_sheet_2x4.png",
-        "url": "/assets/sprites/dance/dex_dance_hat_sheet_2x4.png",
-        "sizeBytes": 2331013,
-        "reason": "Start gate costume preview."
+        "destination": "public/assets/sprites/dance/dex_dance_hat_sheet_2x4.webp",
+        "url": "/assets/sprites/dance/dex_dance_hat_sheet_2x4.webp",
+        "sizeBytes": 1628024,
+        "reason": "Start gate costume preview.",
+        "sourceSizeBytes": 2331013,
+        "optimizedSource": "assets_optimized/sprites/dance/dex_dance_hat_sheet_2x4.webp"
       },
       {
         "role": "dance_sweater",
         "source": "assets_raw/dance loop/dex_dance_sweater_sheet_2x4.png",
-        "destination": "public/assets/sprites/dance/dex_dance_sweater_sheet_2x4.png",
-        "url": "/assets/sprites/dance/dex_dance_sweater_sheet_2x4.png",
-        "sizeBytes": 1741862,
-        "reason": "Phase 2 costume state after hat pop."
+        "destination": "public/assets/sprites/dance/dex_dance_sweater_sheet_2x4.webp",
+        "url": "/assets/sprites/dance/dex_dance_sweater_sheet_2x4.webp",
+        "sizeBytes": 1211132,
+        "reason": "Phase 2 costume state after hat pop.",
+        "sourceSizeBytes": 1741862,
+        "optimizedSource": "assets_optimized/sprites/dance/dex_dance_sweater_sheet_2x4.webp"
       },
       {
         "role": "dance_hat_sweater",
         "source": "assets_raw/dance loop/dex_dance_hat_sweater_sheet_2x4.png",
-        "destination": "public/assets/sprites/dance/dex_dance_hat_sweater_sheet_2x4.png",
-        "url": "/assets/sprites/dance/dex_dance_hat_sweater_sheet_2x4.png",
-        "sizeBytes": 1712739,
-        "reason": "Packaged required variant for wardrobe set completeness."
+        "destination": "public/assets/sprites/dance/dex_dance_hat_sweater_sheet_2x4.webp",
+        "url": "/assets/sprites/dance/dex_dance_hat_sweater_sheet_2x4.webp",
+        "sizeBytes": 1194328,
+        "reason": "Packaged required variant for wardrobe set completeness.",
+        "sourceSizeBytes": 1712739,
+        "optimizedSource": "assets_optimized/sprites/dance/dex_dance_hat_sweater_sheet_2x4.webp"
       },
       {
         "role": "dance_hat_sweater_bowtie",
         "source": "assets_raw/dance loop/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
-        "destination": "public/assets/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
-        "url": "/assets/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.png",
-        "sizeBytes": 1714547,
-        "reason": "Phase 1 full birthday outfit base sheet."
+        "destination": "public/assets/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.webp",
+        "url": "/assets/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.webp",
+        "sizeBytes": 1194540,
+        "reason": "Phase 1 full birthday outfit base sheet.",
+        "sourceSizeBytes": 1714547,
+        "optimizedSource": "assets_optimized/sprites/dance/dex_dance_hat_sweater_bowtie_sheet_2x4.webp"
       },
       {
         "role": "dance_frame_01",
         "source": "assets_raw/dance loop/dex_dance_loop_01.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_01.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_01.png",
-        "sizeBytes": 358765,
-        "reason": "Single-frame dance loop animation frame 1."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_01.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_01.webp",
+        "sizeBytes": 202490,
+        "reason": "Single-frame dance loop animation frame 1.",
+        "sourceSizeBytes": 358765,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_01.webp"
       },
       {
         "role": "dance_frame_02",
         "source": "assets_raw/dance loop/dex_dance_loop_02.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_02.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_02.png",
-        "sizeBytes": 364065,
-        "reason": "Single-frame dance loop animation frame 2."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_02.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_02.webp",
+        "sizeBytes": 216446,
+        "reason": "Single-frame dance loop animation frame 2.",
+        "sourceSizeBytes": 364065,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_02.webp"
       },
       {
         "role": "dance_frame_03",
         "source": "assets_raw/dance loop/dex_dance_loop_03.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_03.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_03.png",
-        "sizeBytes": 367910,
-        "reason": "Single-frame dance loop animation frame 3."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_03.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_03.webp",
+        "sizeBytes": 219288,
+        "reason": "Single-frame dance loop animation frame 3.",
+        "sourceSizeBytes": 367910,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_03.webp"
       },
       {
         "role": "dance_frame_04",
         "source": "assets_raw/dance loop/dex_dance_loop_04.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_04.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_04.png",
-        "sizeBytes": 363478,
-        "reason": "Single-frame dance loop animation frame 4."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_04.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_04.webp",
+        "sizeBytes": 210398,
+        "reason": "Single-frame dance loop animation frame 4.",
+        "sourceSizeBytes": 363478,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_04.webp"
       },
       {
         "role": "dance_frame_05",
         "source": "assets_raw/dance loop/dex_dance_loop_05.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_05.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_05.png",
-        "sizeBytes": 359406,
-        "reason": "Single-frame dance loop animation frame 5."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_05.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_05.webp",
+        "sizeBytes": 183316,
+        "reason": "Single-frame dance loop animation frame 5.",
+        "sourceSizeBytes": 359406,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_05.webp"
       },
       {
         "role": "dance_frame_06",
         "source": "assets_raw/dance loop/dex_dance_loop_06.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_06.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_06.png",
-        "sizeBytes": 364858,
-        "reason": "Single-frame dance loop animation frame 6."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_06.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_06.webp",
+        "sizeBytes": 208968,
+        "reason": "Single-frame dance loop animation frame 6.",
+        "sourceSizeBytes": 364858,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_06.webp"
       },
       {
         "role": "dance_frame_07",
         "source": "assets_raw/dance loop/dex_dance_loop_07.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_07.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_07.png",
-        "sizeBytes": 370937,
-        "reason": "Single-frame dance loop animation frame 7."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_07.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_07.webp",
+        "sizeBytes": 209452,
+        "reason": "Single-frame dance loop animation frame 7.",
+        "sourceSizeBytes": 370937,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_07.webp"
       },
       {
         "role": "dance_frame_08",
         "source": "assets_raw/dance loop/dex_dance_loop_08.png",
-        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_08.png",
-        "url": "/assets/sprites/dance/frames/dex_dance_loop_08.png",
-        "sizeBytes": 353484,
-        "reason": "Single-frame dance loop animation frame 8."
+        "destination": "public/assets/sprites/dance/frames/dex_dance_loop_08.webp",
+        "url": "/assets/sprites/dance/frames/dex_dance_loop_08.webp",
+        "sizeBytes": 174454,
+        "reason": "Single-frame dance loop animation frame 8.",
+        "sourceSizeBytes": 353484,
+        "optimizedSource": "assets_optimized/sprites/dance/frames/dex_dance_loop_08.webp"
       },
       {
         "role": "dance_clean_01",
         "source": "assets_raw/dexter_dance_01.png",
-        "destination": "public/assets/sprites/dance/dexter_dance_01.png",
-        "url": "/assets/sprites/dance/dexter_dance_01.png",
-        "sizeBytes": 186143,
-        "reason": "Clean transparent dance frame 1 with no baked background."
+        "destination": "public/assets/sprites/dance/dexter_dance_01.webp",
+        "url": "/assets/sprites/dance/dexter_dance_01.webp",
+        "sizeBytes": 124354,
+        "reason": "Clean transparent dance frame 1 with no baked background.",
+        "sourceSizeBytes": 186143,
+        "optimizedSource": "assets_optimized/sprites/dance/dexter_dance_01.webp"
       },
       {
         "role": "dance_clean_02",
         "source": "assets_raw/dexter_dance_02.png",
-        "destination": "public/assets/sprites/dance/dexter_dance_02.png",
-        "url": "/assets/sprites/dance/dexter_dance_02.png",
-        "sizeBytes": 186571,
-        "reason": "Clean transparent dance frame 2 with no baked background."
+        "destination": "public/assets/sprites/dance/dexter_dance_02.webp",
+        "url": "/assets/sprites/dance/dexter_dance_02.webp",
+        "sizeBytes": 124738,
+        "reason": "Clean transparent dance frame 2 with no baked background.",
+        "sourceSizeBytes": 186571,
+        "optimizedSource": "assets_optimized/sprites/dance/dexter_dance_02.webp"
       },
       {
         "role": "dance_clean_03",
         "source": "assets_raw/dexter_dance_03.png",
-        "destination": "public/assets/sprites/dance/dexter_dance_03.png",
-        "url": "/assets/sprites/dance/dexter_dance_03.png",
-        "sizeBytes": 186997,
-        "reason": "Clean transparent dance frame 3 with no baked background."
+        "destination": "public/assets/sprites/dance/dexter_dance_03.webp",
+        "url": "/assets/sprites/dance/dexter_dance_03.webp",
+        "sizeBytes": 124480,
+        "reason": "Clean transparent dance frame 3 with no baked background.",
+        "sourceSizeBytes": 186997,
+        "optimizedSource": "assets_optimized/sprites/dance/dexter_dance_03.webp"
       },
       {
         "role": "hit_react_01",
         "source": "assets_raw/shark_hit/dex_hit_react_01.png",
-        "destination": "public/assets/sprites/hit/dex_hit_react_01.png",
-        "url": "/assets/sprites/hit/dex_hit_react_01.png",
-        "sizeBytes": 103385,
-        "reason": "Hazard reaction frame 1."
+        "destination": "public/assets/sprites/hit/dex_hit_react_01.webp",
+        "url": "/assets/sprites/hit/dex_hit_react_01.webp",
+        "sizeBytes": 65694,
+        "reason": "Hazard reaction frame 1.",
+        "sourceSizeBytes": 103385,
+        "optimizedSource": "assets_optimized/sprites/hit/dex_hit_react_01.webp"
       },
       {
         "role": "hit_react_02",
         "source": "assets_raw/shark_hit/dex_hit_react_02.png",
-        "destination": "public/assets/sprites/hit/dex_hit_react_02.png",
-        "url": "/assets/sprites/hit/dex_hit_react_02.png",
-        "sizeBytes": 111781,
-        "reason": "Hazard reaction frame 2."
+        "destination": "public/assets/sprites/hit/dex_hit_react_02.webp",
+        "url": "/assets/sprites/hit/dex_hit_react_02.webp",
+        "sizeBytes": 74518,
+        "reason": "Hazard reaction frame 2.",
+        "sourceSizeBytes": 111781,
+        "optimizedSource": "assets_optimized/sprites/hit/dex_hit_react_02.webp"
       },
       {
         "role": "hit_react_03",
         "source": "assets_raw/shark_hit/dex_hit_react_03.png",
-        "destination": "public/assets/sprites/hit/dex_hit_react_03.png",
-        "url": "/assets/sprites/hit/dex_hit_react_03.png",
-        "sizeBytes": 110983,
-        "reason": "Hazard reaction frame 3."
+        "destination": "public/assets/sprites/hit/dex_hit_react_03.webp",
+        "url": "/assets/sprites/hit/dex_hit_react_03.webp",
+        "sizeBytes": 73044,
+        "reason": "Hazard reaction frame 3.",
+        "sourceSizeBytes": 110983,
+        "optimizedSource": "assets_optimized/sprites/hit/dex_hit_react_03.webp"
       },
       {
         "role": "perfect_pop",
         "source": "assets_raw/dex_perfect_pop.png",
-        "destination": "public/assets/sprites/ui/dex_perfect_pop.png",
-        "url": "/assets/sprites/ui/dex_perfect_pop.png",
-        "sizeBytes": 129042,
-        "reason": "Perfect hit overlay animation."
+        "destination": "public/assets/sprites/ui/dex_perfect_pop.webp",
+        "url": "/assets/sprites/ui/dex_perfect_pop.webp",
+        "sizeBytes": 87806,
+        "reason": "Perfect hit overlay animation.",
+        "sourceSizeBytes": 129042,
+        "optimizedSource": "assets_optimized/sprites/ui/dex_perfect_pop.webp"
       },
       {
         "role": "shadow_blob",
         "source": "assets_raw/shadow_blob.png",
-        "destination": "public/assets/sprites/ui/shadow_blob.png",
-        "url": "/assets/sprites/ui/shadow_blob.png",
-        "sizeBytes": 12761,
-        "reason": "Dexter foot shadow layer."
+        "destination": "public/assets/sprites/ui/shadow_blob.webp",
+        "url": "/assets/sprites/ui/shadow_blob.webp",
+        "sizeBytes": 7124,
+        "reason": "Dexter foot shadow layer.",
+        "sourceSizeBytes": 12761,
+        "optimizedSource": "assets_optimized/sprites/ui/shadow_blob.webp"
       },
       {
         "role": "spotlight_vignette",
         "source": "assets_raw/spotlight_vignette.png",
-        "destination": "public/assets/sprites/ui/spotlight_vignette.png",
-        "url": "/assets/sprites/ui/spotlight_vignette.png",
-        "sizeBytes": 162662,
-        "reason": "Phase 2 dramatic spotlight overlay."
+        "destination": "public/assets/sprites/ui/spotlight_vignette.webp",
+        "url": "/assets/sprites/ui/spotlight_vignette.webp",
+        "sizeBytes": 73630,
+        "reason": "Phase 2 dramatic spotlight overlay.",
+        "sourceSizeBytes": 162662,
+        "optimizedSource": "assets_optimized/sprites/ui/spotlight_vignette.webp"
       },
       {
         "role": "censor_slam",
         "source": "assets_raw/censor_slam.png",
-        "destination": "public/assets/sprites/ui/censor_slam.png",
-        "url": "/assets/sprites/ui/censor_slam.png",
-        "sizeBytes": 17802,
-        "reason": "Phase 3 slam overlay."
+        "destination": "public/assets/sprites/ui/censor_slam.webp",
+        "url": "/assets/sprites/ui/censor_slam.webp",
+        "sizeBytes": 6360,
+        "reason": "Phase 3 slam overlay.",
+        "sourceSizeBytes": 17802,
+        "optimizedSource": "assets_optimized/sprites/ui/censor_slam.webp"
       },
       {
         "role": "victory_subtext",
         "source": "assets_raw/victory_subtext.png",
-        "destination": "public/assets/sprites/ui/victory_subtext.png",
-        "url": "/assets/sprites/ui/victory_subtext.png",
-        "sizeBytes": 13296,
-        "reason": "Victory subtitle support art."
+        "destination": "public/assets/sprites/ui/victory_subtext.webp",
+        "url": "/assets/sprites/ui/victory_subtext.webp",
+        "sizeBytes": 6458,
+        "reason": "Victory subtitle support art.",
+        "sourceSizeBytes": 13296,
+        "optimizedSource": "assets_optimized/sprites/ui/victory_subtext.webp"
       },
       {
         "role": "title_screen",
         "source": "assets_raw/Title_Screen.png",
-        "destination": "public/assets/sprites/ui/Title_Screen.png",
-        "url": "/assets/sprites/ui/Title_Screen.png",
-        "sizeBytes": 7241904,
-        "reason": "Launch screen art used before gameplay starts."
+        "destination": "public/assets/sprites/ui/Title_Screen.webp",
+        "url": "/assets/sprites/ui/Title_Screen.webp",
+        "sizeBytes": 4691648,
+        "reason": "Launch screen art used before gameplay starts.",
+        "sourceSizeBytes": 7241904,
+        "optimizedSource": "assets_optimized/sprites/ui/Title_Screen.webp"
       },
       {
         "role": "pwa_guide",
         "source": "assets_raw/PWA_guide.png",
-        "destination": "public/assets/sprites/ui/PWA_guide.png",
-        "url": "/assets/sprites/ui/PWA_guide.png",
-        "sizeBytes": 5854486,
-        "reason": "PWA install guide image used as the first on-screen call-to-action."
+        "destination": "public/assets/sprites/ui/PWA_guide.webp",
+        "url": "/assets/sprites/ui/PWA_guide.webp",
+        "sizeBytes": 3637408,
+        "reason": "PWA install guide image used as the first on-screen call-to-action.",
+        "sourceSizeBytes": 5854486,
+        "optimizedSource": "assets_optimized/sprites/ui/PWA_guide.webp"
       },
       {
         "role": "hazard_shark_fin",
         "source": "assets_raw/Shark.png",
-        "destination": "public/assets/sprites/items/hazard_shark_fin.png",
-        "url": "/assets/sprites/items/hazard_shark_fin.png",
-        "sizeBytes": 1647346,
-        "reason": "Horizontal swimming shark hazard."
+        "destination": "public/assets/sprites/items/hazard_shark_fin.webp",
+        "url": "/assets/sprites/items/hazard_shark_fin.webp",
+        "sizeBytes": 471564,
+        "reason": "Horizontal swimming shark hazard.",
+        "sourceSizeBytes": 1647346,
+        "optimizedSource": "assets_optimized/sprites/items/hazard_shark_fin.webp"
       },
       {
         "role": "item_nana_cheese",
         "source": "assets_raw/Cheese.png",
-        "destination": "public/assets/sprites/items/item_nana_cheese.png",
-        "url": "/assets/sprites/items/item_nana_cheese.png",
-        "sizeBytes": 1509348,
-        "reason": "Left lane cheese item - auto-collected."
+        "destination": "public/assets/sprites/items/item_nana_cheese.webp",
+        "url": "/assets/sprites/items/item_nana_cheese.webp",
+        "sizeBytes": 377280,
+        "reason": "Left lane cheese item - auto-collected.",
+        "sourceSizeBytes": 1509348,
+        "optimizedSource": "assets_optimized/sprites/items/item_nana_cheese.webp"
       },
       {
         "role": "item_unsweetened_iced_tea",
         "source": "assets_raw/Iced_Tea.png",
-        "destination": "public/assets/sprites/items/item_unsweetened_iced_tea.png",
-        "url": "/assets/sprites/items/item_unsweetened_iced_tea.png",
-        "sizeBytes": 1554764,
-        "reason": "Right lane iced tea item - auto-collected."
+        "destination": "public/assets/sprites/items/item_unsweetened_iced_tea.webp",
+        "url": "/assets/sprites/items/item_unsweetened_iced_tea.webp",
+        "sizeBytes": 367256,
+        "reason": "Right lane iced tea item - auto-collected.",
+        "sourceSizeBytes": 1554764,
+        "optimizedSource": "assets_optimized/sprites/items/item_unsweetened_iced_tea.webp"
       },
       {
         "role": "overlay_party_hat",
         "source": "assets_raw/overlay_party_hat.png",
-        "destination": "public/assets/sprites/overlays/overlay_party_hat.png",
-        "url": "/assets/sprites/overlays/overlay_party_hat.png",
-        "sizeBytes": 37507,
-        "reason": "Hat pop burst layer."
+        "destination": "public/assets/sprites/overlays/overlay_party_hat.webp",
+        "url": "/assets/sprites/overlays/overlay_party_hat.webp",
+        "sizeBytes": 27450,
+        "reason": "Hat pop burst layer.",
+        "sourceSizeBytes": 37507,
+        "optimizedSource": "assets_optimized/sprites/overlays/overlay_party_hat.webp"
       },
       {
         "role": "overlay_birthday_sweater",
         "source": "assets_raw/overlay_birthday_sweater.png",
-        "destination": "public/assets/sprites/overlays/overlay_birthday_sweater.png",
-        "url": "/assets/sprites/overlays/overlay_birthday_sweater.png",
-        "sizeBytes": 108149,
-        "reason": "Sweater pop burst layer."
+        "destination": "public/assets/sprites/overlays/overlay_birthday_sweater.webp",
+        "url": "/assets/sprites/overlays/overlay_birthday_sweater.webp",
+        "sizeBytes": 80992,
+        "reason": "Sweater pop burst layer.",
+        "sourceSizeBytes": 108149,
+        "optimizedSource": "assets_optimized/sprites/overlays/overlay_birthday_sweater.webp"
       },
       {
         "role": "overlay_bowtie",
         "source": "assets_raw/overlay_bowtie.png",
-        "destination": "public/assets/sprites/overlays/overlay_bowtie.png",
-        "url": "/assets/sprites/overlays/overlay_bowtie.png",
-        "sizeBytes": 14135,
-        "reason": "Bowtie overlay and pop burst layer."
+        "destination": "public/assets/sprites/overlays/overlay_bowtie.webp",
+        "url": "/assets/sprites/overlays/overlay_bowtie.webp",
+        "sizeBytes": 10202,
+        "reason": "Bowtie overlay and pop burst layer.",
+        "sourceSizeBytes": 14135,
+        "optimizedSource": "assets_optimized/sprites/overlays/overlay_bowtie.webp"
       },
       {
         "role": "dexter_neutral",
         "source": "assets_raw/dexter_neutral.png",
-        "destination": "public/assets/sprites/poses/dexter_neutral.png",
-        "url": "/assets/sprites/poses/dexter_neutral.png",
-        "sizeBytes": 154533,
-        "reason": "Start gate pose."
+        "destination": "public/assets/sprites/poses/dexter_neutral.webp",
+        "url": "/assets/sprites/poses/dexter_neutral.webp",
+        "sizeBytes": 103088,
+        "reason": "Start gate pose.",
+        "sourceSizeBytes": 154533,
+        "optimizedSource": "assets_optimized/sprites/poses/dexter_neutral.webp"
       },
       {
         "role": "dexter_focused",
         "source": "assets_raw/dexter_focused.png",
-        "destination": "public/assets/sprites/poses/dexter_focused.png",
-        "url": "/assets/sprites/poses/dexter_focused.png",
-        "sizeBytes": 182520,
-        "reason": "Rhythm pose badge."
+        "destination": "public/assets/sprites/poses/dexter_focused.webp",
+        "url": "/assets/sprites/poses/dexter_focused.webp",
+        "sizeBytes": 122986,
+        "reason": "Rhythm pose badge.",
+        "sourceSizeBytes": 182520,
+        "optimizedSource": "assets_optimized/sprites/poses/dexter_focused.webp"
       },
       {
         "role": "dexter_excited",
         "source": "assets_raw/dexter_excited.png",
-        "destination": "public/assets/sprites/poses/dexter_excited.png",
-        "url": "/assets/sprites/poses/dexter_excited.png",
-        "sizeBytes": 191055,
-        "reason": "Popoff phase pose badge."
+        "destination": "public/assets/sprites/poses/dexter_excited.webp",
+        "url": "/assets/sprites/poses/dexter_excited.webp",
+        "sizeBytes": 129308,
+        "reason": "Popoff phase pose badge.",
+        "sourceSizeBytes": 191055,
+        "optimizedSource": "assets_optimized/sprites/poses/dexter_excited.webp"
       },
       {
         "role": "dexter_joyful",
         "source": "assets_raw/dexter_joyful.png",
-        "destination": "public/assets/sprites/poses/dexter_joyful.png",
-        "url": "/assets/sprites/poses/dexter_joyful.png",
-        "sizeBytes": 181296,
-        "reason": "Joyful pose badge and icon fallback source."
+        "destination": "public/assets/sprites/poses/dexter_joyful.webp",
+        "url": "/assets/sprites/poses/dexter_joyful.webp",
+        "sizeBytes": 122630,
+        "reason": "Joyful pose badge and icon fallback source.",
+        "sourceSizeBytes": 181296,
+        "optimizedSource": "assets_optimized/sprites/poses/dexter_joyful.webp"
       },
       {
         "role": "dexter_proud",
         "source": "assets_raw/dexter_proud.png",
-        "destination": "public/assets/sprites/poses/dexter_proud.png",
-        "url": "/assets/sprites/poses/dexter_proud.png",
-        "sizeBytes": 206398,
-        "reason": "Victory pose badge and icon source preference."
+        "destination": "public/assets/sprites/poses/dexter_proud.webp",
+        "url": "/assets/sprites/poses/dexter_proud.webp",
+        "sizeBytes": 140196,
+        "reason": "Victory pose badge and icon source preference.",
+        "sourceSizeBytes": 206398,
+        "optimizedSource": "assets_optimized/sprites/poses/dexter_proud.webp"
       }
     ],
     "backgrounds": {
@@ -310,8 +384,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-25-06.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-25-06.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-25-06.mp4",
-          "sizeBytes": 7269290,
+          "sizeBytes": 5026486,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 7269290,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-25-06.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -319,8 +395,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-25-49.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-25-49.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-25-49.mp4",
-          "sizeBytes": 8541468,
+          "sizeBytes": 6010873,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 8541468,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-25-49.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -328,8 +406,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-26-44.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-26-44.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-26-44.mp4",
-          "sizeBytes": 4295004,
+          "sizeBytes": 2725955,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 4295004,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-26-44.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -337,8 +417,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-27-23.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-27-23.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-27-23.mp4",
-          "sizeBytes": 4470852,
+          "sizeBytes": 2871495,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 4470852,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-27-23.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -346,8 +428,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-27-24.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-27-24.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-27-24.mp4",
-          "sizeBytes": 4470852,
+          "sizeBytes": 2871495,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 4470852,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-27-24.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -355,8 +439,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-28-17.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-28-17.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-28-17.mp4",
-          "sizeBytes": 1593466,
+          "sizeBytes": 973190,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 1593466,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-28-17.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -364,8 +450,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-30-04.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-30-04.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-30-04.mp4",
-          "sizeBytes": 1840667,
+          "sizeBytes": 1045289,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 1840667,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-30-04.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -373,8 +461,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-31-03.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-31-03.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-31-03.mp4",
-          "sizeBytes": 3759619,
+          "sizeBytes": 2307096,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 3759619,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-31-03.mp4",
           "fallbackType": "mp4"
         },
         {
@@ -382,8 +472,10 @@
           "source": "assets_backgrounds/grok_video_2026-02-08-15-32-25.mp4",
           "destination": "public/assets/backgrounds/grok_video_2026-02-08-15-32-25.mp4",
           "url": "/assets/backgrounds/grok_video_2026-02-08-15-32-25.mp4",
-          "sizeBytes": 4224633,
+          "sizeBytes": 2643024,
           "reason": "Primary animated background loop.",
+          "sourceSizeBytes": 4224633,
+          "optimizedSource": "assets_optimized/backgrounds/grok_video_2026-02-08-15-32-25.mp4",
           "fallbackType": "mp4"
         }
       ],
@@ -391,64 +483,78 @@
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582054016.png",
-          "destination": "public/assets/backgrounds/1770582054016.png",
-          "url": "/assets/backgrounds/1770582054016.png",
-          "sizeBytes": 6333771,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582054016.webp",
+          "url": "/assets/backgrounds/1770582054016.webp",
+          "sizeBytes": 4141610,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 6333771,
+          "optimizedSource": "assets_optimized/backgrounds/1770582054016.webp",
           "fallbackType": "png"
         },
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582057020.png",
-          "destination": "public/assets/backgrounds/1770582057020.png",
-          "url": "/assets/backgrounds/1770582057020.png",
-          "sizeBytes": 6312052,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582057020.webp",
+          "url": "/assets/backgrounds/1770582057020.webp",
+          "sizeBytes": 4031510,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 6312052,
+          "optimizedSource": "assets_optimized/backgrounds/1770582057020.webp",
           "fallbackType": "png"
         },
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582061308.png",
-          "destination": "public/assets/backgrounds/1770582061308.png",
-          "url": "/assets/backgrounds/1770582061308.png",
-          "sizeBytes": 6967417,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582061308.webp",
+          "url": "/assets/backgrounds/1770582061308.webp",
+          "sizeBytes": 4493090,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 6967417,
+          "optimizedSource": "assets_optimized/backgrounds/1770582061308.webp",
           "fallbackType": "png"
         },
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582074136.png",
-          "destination": "public/assets/backgrounds/1770582074136.png",
-          "url": "/assets/backgrounds/1770582074136.png",
-          "sizeBytes": 5899045,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582074136.webp",
+          "url": "/assets/backgrounds/1770582074136.webp",
+          "sizeBytes": 4044464,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 5899045,
+          "optimizedSource": "assets_optimized/backgrounds/1770582074136.webp",
           "fallbackType": "png"
         },
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582075405.png",
-          "destination": "public/assets/backgrounds/1770582075405.png",
-          "url": "/assets/backgrounds/1770582075405.png",
-          "sizeBytes": 6440266,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582075405.webp",
+          "url": "/assets/backgrounds/1770582075405.webp",
+          "sizeBytes": 4122604,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 6440266,
+          "optimizedSource": "assets_optimized/backgrounds/1770582075405.webp",
           "fallbackType": "png"
         },
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582078902.png",
-          "destination": "public/assets/backgrounds/1770582078902.png",
-          "url": "/assets/backgrounds/1770582078902.png",
-          "sizeBytes": 5901303,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582078902.webp",
+          "url": "/assets/backgrounds/1770582078902.webp",
+          "sizeBytes": 3994924,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 5901303,
+          "optimizedSource": "assets_optimized/backgrounds/1770582078902.webp",
           "fallbackType": "png"
         },
         {
           "role": "background_png_fallback",
           "source": "assets_backgrounds/1770582089865.png",
-          "destination": "public/assets/backgrounds/1770582089865.png",
-          "url": "/assets/backgrounds/1770582089865.png",
-          "sizeBytes": 6967519,
-          "reason": "PNG fallback frame for devices where MP4 cannot play reliably.",
+          "destination": "public/assets/backgrounds/1770582089865.webp",
+          "url": "/assets/backgrounds/1770582089865.webp",
+          "sizeBytes": 4493026,
+          "reason": "Lossless fallback frame for devices where MP4 cannot play reliably.",
+          "sourceSizeBytes": 6967519,
+          "optimizedSource": "assets_optimized/backgrounds/1770582089865.webp",
           "fallbackType": "png"
         }
       ]
@@ -702,8 +808,8 @@
     "source": "assets_raw/The_Full_Weasel_Icon.png",
     "output192": "public/icons/icon-192.png",
     "output512": "public/icons/icon-512.png",
-    "method": "pillow",
+    "method": "governed_derivative",
     "degraded": false,
-    "note": "Generated icons using Python Pillow trim/crop/resize."
+    "note": "Copied reproducible governed icon derivatives."
   }
 }
